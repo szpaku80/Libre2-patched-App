@@ -107,4 +107,4 @@ else
   exit 1
 fi
 
-echo "Bitte signieren Sie die fertig gepatchte APK Datei APK/librelink_aligned.apk bevor Sie versuchen, diese auf dem SmartPhone zu installieren."
+echo "Bitte signieren Sie die fertig gepatchte APK Datei APK/librelink_aligned.apk mittels 'apksigner', bevor Sie versuchen, diese auf dem SmartPhone zu installieren."
