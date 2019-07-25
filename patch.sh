@@ -90,7 +90,7 @@ else
   exit 1
 fi
 
-echo "Räume /tmp/ aus ..."
+echo "Räume /tmp/ auf ..."
 cd $(cat /tmp/librepatch.pwd)
 rm -rf /tmp/librelink/
 rm /tmp/librepatch.pwd
