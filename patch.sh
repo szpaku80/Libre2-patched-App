@@ -7,7 +7,6 @@ RED='\033[1;31m'
 WHITE='\033[1;37m'
 YELLOW='\033[1;33m'
 
-
 echo -e "${WHITE}Suche APK Datei 'com.freestylelibre.app.de_2019-04-22.apk' ...${NORMAL}"
 if [ -e APK/com.freestylelibre.app.de_2019-04-22.apk ]; then
   echo -e "${GREEN}  gefunden.${NORMAL}"
@@ -116,4 +115,27 @@ else
   exit 1
 fi
 
-echo -e "${YELLOW}=> Bitte signieren Sie die fertig gepatchte APK Datei APK/librelink_aligned.apk mittels 'apksigner', bevor Sie versuchen, diese auf dem SmartPhone zu installieren.${NORMAL}"
+echo -e "${WHITE}Erstelle Keystore zum Signieren der gepatchten APK Datei ...${NORMAL}"
+keytool -genkey -v -keystore /tmp/libre-keystore.jks -alias "Libre Signer" -keyalg RSA -keysize 2048 --validity 10000 --storepass geheim -dname "cn=Libre Signer, c=de"
+if [ $? = 0 ]; then
+  echo -e "${GREEN}  okay.${NORMAL}"
+else
+  echo -e "${RED}  nicht okay.${NORMAL}"
+  echo
+  echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
+  exit 1
+fi
+
+echo -e "${WHITE}Signiere gepatchte APK Datei ...${NORMAL}"
+apksigner sign --ks-pass pass:geheim --ks /tmp/libre-keystore.jks APK/librelink_aligned.apk
+if [ $? = 0 ]; then
+  echo -e "${GREEN}  okay.${NORMAL}"
+  rm /tmp/libre-keystore.jks
+else
+  echo -e "${RED}  nicht okay.${NORMAL}"
+  echo
+  echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
+  exit 1
+fi
+
+echo -e "${GREEN}Fertig! Die fertig gepatchte und signierte APK Datei finden Sie unter APK/librelink_aligned.apk${NORMAL}"
