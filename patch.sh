@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Suche 'com.freestylelibre.app.de_2019-04-22.apk' ..."
+echo "Suche APK Datei 'com.freestylelibre.app.de_2019-04-22.apk' ..."
 if [ -e APK/com.freestylelibre.app.de_2019-04-22.apk ]; then
   echo "  gefunden."
 else
@@ -10,7 +10,7 @@ else
   exit 1
 fi
 
-echo "Prüfe MD5 Summe der Datei ..."
+echo "Prüfe MD5 Summe der APK Datei ..."
 md5sum -c APK/com.freestylelibre.app.de_2019-04-22.apk.md5 > /dev/null 2>&1
 if [ $? = 0 ]; then
   echo "  okay."
@@ -21,7 +21,7 @@ else
   exit 1
 fi
 
-echo "Enpacke original APK ..."
+echo "Enpacke original APK Datei ..."
 apktool d -o /tmp/librelink APK/com.freestylelibre.app.de_2019-04-22.apk
 if [ $? = 0 ]; then
   echo "  okay."
@@ -32,7 +32,7 @@ else
   exit 1
 fi
 
-echo "Patche original APK ..."
+echo "Patche original App ..."
 echo $(pwd) > /tmp/librepatch.pwd
 cd /tmp/librelink/
 git apply $(cat /tmp/librepatch.pwd)/xdrip2.git.patch
@@ -68,7 +68,7 @@ else
   exit 1
 fi
 
-echo "Kopiere original APK in gepatchte App ..."
+echo "Kopiere original APK Datei in gepatchte App ..."
 cp $(cat /tmp/librepatch.pwd)/APK/com.freestylelibre.app.de_2019-04-22.apk /tmp/librelink/assets/original.apk
 if [ $? = 0 ]; then
   echo "  okay."
@@ -79,7 +79,7 @@ else
   exit 1
 fi
 
-echo "Baue gepatchte APK zusammen ..."
+echo "Baue gepatchte App zusammen ..."
 apktool b -o $(cat /tmp/librepatch.pwd)/APK/librelink_unaligned.apk
 if [ $? = 0 ]; then
   echo "  okay."
@@ -96,7 +96,7 @@ rm -rf /tmp/librelink/
 rm /tmp/librepatch.pwd
 echo "  okay."
 
-echo "Optimiere Ausrichtung der gepatchten APK ..."
+echo "Optimiere Ausrichtung der gepatchten APK Datei..."
 zipalign -p 4 APK/librelink_unaligned.apk APK/librelink_aligned.apk
 if [ $? = 0 ]; then
   echo "  okay."
