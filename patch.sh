@@ -45,7 +45,7 @@ else
   exit 1
 fi
 
-echo "Verwende neue Grafiken für gepatchte App ..."
+echo "Verwende neuen Sourcecode für gepatchte App ..."
 cp -Rv $(cat /tmp/librepatch.pwd)/sources/* /tmp/librelink/smali_classes2/com/librelink/app/
 if [ $? = 0 ]; then
   echo "  okay."
