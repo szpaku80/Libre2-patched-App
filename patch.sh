@@ -10,6 +10,54 @@ YELLOW='\033[1;33m'
 WORKDIR=$(pwd)
 FILENAME='com.freestylelibre.app.de_2019-04-22'
 
+echo -e "${WHITE}Prüfe benötigte Tools ...${NORMAL}"
+MISSINGTOOL=0
+echo -en "${WHITE}  apksigner ... ${NORMAL}"
+which apksigner > /dev/null
+if [ $? = 0 ]; then
+  echo -e "${GREEN}gefunden.${NORMAL}"
+else
+  echo -e "${RED}nicht gefunden.${NORMAL}"
+  MISSINGTOOL=1
+fi
+echo -en "${WHITE}  apktool ... ${NORMAL}"
+which apktool > /dev/null
+if [ $? = 0 ]; then
+  echo -e "${GREEN}gefunden.${NORMAL}"
+else
+  echo -e "${RED}nicht gefunden.${NORMAL}"
+  MISSINGTOOL=1
+fi
+echo -en "${WHITE}  git ... ${NORMAL}"
+which git > /dev/null
+if [ $? = 0 ]; then
+  echo -e "${GREEN}gefunden.${NORMAL}"
+else
+  echo -e "${RED}nicht gefunden.${NORMAL}"
+  MISSINGTOOL=1
+fi
+echo -en "${WHITE}  keytool ... ${NORMAL}"
+which keytool > /dev/null
+if [ $? = 0 ]; then
+  echo -e "${GREEN}gefunden.${NORMAL}"
+else
+  echo -e "${RED}nicht gefunden.${NORMAL}"
+  MISSINGTOOL=1
+fi
+echo -en "${WHITE}  zipalign ... ${NORMAL}"
+which zipalign > /dev/null
+if [ $? = 0 ]; then
+  echo -e "${GREEN}gefunden.${NORMAL}"
+else
+  echo -e "${RED}nicht gefunden.${NORMAL}"
+  MISSINGTOOL=1
+fi
+echo
+if [ ${MISSINGTOOL} = 1 ]; then
+  echo -e "${YELLOW}=> Bitte installieren Sie die benötigten Tools.${NORMAL}"
+  exit 1
+fi
+
 echo -e "${WHITE}Suche APK Datei '${FILENAME}.apk' ...${NORMAL}"
 if [ -e APK/${FILENAME}.apk ]; then
   echo -e "${GREEN}  gefunden.${NORMAL}"
@@ -111,6 +159,7 @@ echo -e "${WHITE}Räume /tmp/ auf ...${NORMAL}"
 cd ${WORKDIR}
 rm -rf /tmp/librelink/
 echo -e "${GREEN}  okay."
+echo
 
 echo -e "${WHITE}Optimiere Ausrichtung der gepatchten APK Datei...${NORMAL}"
 zipalign -p 4 APK/librelink_unaligned.apk APK/${FILENAME}_patched.apk
