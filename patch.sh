@@ -21,12 +21,18 @@ else
   MISSINGTOOL=1
 fi
 echo -en "${WHITE}  apktool ... ${NORMAL}"
-which apktool > /dev/null
-if [ $? = 0 ]; then
+if [ -x tools/apktool ]; then
   echo -e "${GREEN}gefunden.${NORMAL}"
+  APKTOOL=$(pwd)/tools/apktool
 else
-  echo -e "${RED}nicht gefunden.${NORMAL}"
-  MISSINGTOOL=1
+  which apktool > /dev/null
+  if [ $? = 0 ]; then
+    echo -e "${GREEN}gefunden.${NORMAL} Herkunft und Kompatibilität allerdings unbekannt."
+    APKTOOL=$(which apktool)
+  else
+    echo -e "${RED}nicht gefunden.${NORMAL}"
+    MISSINGTOOL=1
+  fi
 fi
 echo -en "${WHITE}  git ... ${NORMAL}"
 which git > /dev/null
@@ -82,7 +88,7 @@ else
 fi
 
 echo -e "${WHITE}Enpacke original APK Datei ...${NORMAL}"
-apktool d -o /tmp/librelink APK/${FILENAME}.apk
+${APKTOOL} d -o /tmp/librelink APK/${FILENAME}.apk
 if [ $? = 0 ]; then
   echo -e "${GREEN}  okay.${NORMAL}"
   echo
@@ -144,7 +150,7 @@ else
 fi
 
 echo -e "${WHITE}Baue gepatchte App zusammen ...${NORMAL}"
-apktool b -o ${WORKDIR}/APK/librelink_unaligned.apk
+${APKTOOL} b -o ${WORKDIR}/APK/librelink_unaligned.apk
 if [ $? = 0 ]; then
   echo -e "${GREEN}  okay.${NORMAL}"
   echo
