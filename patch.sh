@@ -205,4 +205,20 @@ else
   exit 1
 fi
 
-echo -e "${YELLOW}Fertig! Die gepatchte und signierte APK Datei finden Sie unter APK/${FILENAME}_patched.apk${NORMAL}"
+if [ -d /mnt/c/ ]; then
+  echo -e "Windows-System erkannt ..."
+  echo -e "Kopiere APK ..."
+  mkdir -p /mnt/c/APK
+  cp APK/${FILENAME} /mnt/c/APK/
+  if [ $? = 0 ]; then
+    echo -e "${GREEN}  okay.${NORMAL}"
+    echo
+  else
+    echo -e "${RED}  nicht okay.${NORMAL}"
+    echo
+    echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
+    exit 1
+  fi
+else
+  echo -e "${YELLOW}Fertig! Die gepatchte und signierte APK Datei finden Sie unter APK/${FILENAME}_patched.apk${NORMAL}"
+fi
