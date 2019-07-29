@@ -206,13 +206,14 @@ else
 fi
 
 if [ -d /mnt/c/ ]; then
-  echo -e "Windows-System erkannt ..."
-  echo -e "Kopiere APK ..."
+  echo -e "${WHITE}Windows-System erkannt ...${NORMAL}"
+  echo -e "${WHITE}Kopiere APK ...${NORMAL}"
   mkdir -p /mnt/c/APK
   cp APK/${FILENAME} /mnt/c/APK/
   if [ $? = 0 ]; then
     echo -e "${GREEN}  okay.${NORMAL}"
     echo
+  echo -e "${YELLOW}Fertig! Die gepatchte und signierte APK Datei finden Sie unter C:\APK\${FILENAME}_patched.apk${NORMAL}"
   else
     echo -e "${RED}  nicht okay.${NORMAL}"
     echo
