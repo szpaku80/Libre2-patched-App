@@ -24,6 +24,7 @@ fi
 
 echo -e "${WHITE}Lade 'apktool'  herunter ...${NORMAL}"
 echo "Info: Debian liefert eine nicht ohne weiteres funktionierende 'dirty'-Version mit. Daher der externe Download."
+mkdir -p tools
 wget -q -O tools/apktool https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
 chmod 755 tools/apktool
 wget -q -O tools/apktool.jar https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.4.0.jar
