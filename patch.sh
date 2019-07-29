@@ -209,7 +209,7 @@ if [ -d /mnt/c/ ]; then
   echo -e "${WHITE}Windows-System erkannt ...${NORMAL}"
   echo -e "${WHITE}Kopiere APK ...${NORMAL}"
   mkdir -p /mnt/c/APK
-  cp APK/${FILENAME} /mnt/c/APK/
+  cp APK/${FILENAME}_patched.apk /mnt/c/APK/
   if [ $? = 0 ]; then
     echo -e "${GREEN}  okay.${NORMAL}"
     echo
