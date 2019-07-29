@@ -181,7 +181,7 @@ else
 fi
 
 echo -e "${WHITE}Erstelle Keystore zum Signieren der gepatchten APK Datei ...${NORMAL}"
-keytool -genkey -v -keystore /tmp/libre-keystore.jks -alias "Libre Signer" -keyalg RSA -keysize 2048 --validity 10000 --storepass geheim -dname "cn=Libre Signer, c=de"
+keytool -genkey -v -keystore /tmp/libre-keystore.p12 -storetype PKCS12 -alias "Libre Signer" -keyalg RSA -keysize 2048 --validity 10000 --storepass geheim --keypass geheim -dname "cn=Libre Signer, c=de"
 if [ $? = 0 ]; then
   echo -e "${GREEN}  okay.${NORMAL}"
   echo
@@ -193,11 +193,11 @@ else
 fi
 
 echo -e "${WHITE}Signiere gepatchte APK Datei ...${NORMAL}"
-apksigner sign --ks-pass pass:geheim --ks /tmp/libre-keystore.jks APK/${FILENAME}_patched.apk
+apksigner sign --ks-pass pass:geheim --ks /tmp/libre-keystore.p12 APK/${FILENAME}_patched.apk
 if [ $? = 0 ]; then
   echo -e "${GREEN}  okay.${NORMAL}"
   echo
-  rm /tmp/libre-keystore.jks
+  rm /tmp/libre-keystore.p12
 else
   echo -e "${RED}  nicht okay.${NORMAL}"
   echo
