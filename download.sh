@@ -22,7 +22,7 @@ else
   exit 1
 fi
 
-echo -e "${WHITE}Lade 'apktool'  herunter ...${NORMAL}"
+echo -e "${WHITE}Lade 'apktool' herunter ...${NORMAL}"
 echo "Info: Debian liefert eine nicht ohne weiteres funktionierende 'dirty'-Version mit. Daher der externe Download."
 mkdir -p tools
 wget -q -O tools/apktool https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
