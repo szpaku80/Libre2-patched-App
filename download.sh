@@ -1,3 +1,38 @@
 #!/bin/bash
 
-wget -O APK/com.freestylelibre.app.de_2019-04-22.apk http://bit.ly/2Oo97Nv
+# Color codes
+NORMAL='\033[0;39m'
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+WHITE='\033[1;37m'
+YELLOW='\033[1;33m'
+
+WORKDIR=$(pwd)
+FILENAME='com.freestylelibre.app.de_2019-04-22'
+
+echo -e "${WHITE}Lade original APK herunter ...${NORMAL}"
+wget -q -O APK/${FILENAME}.apk http://bit.ly/2Oo97Nv
+if [ $? = 0 ]; then
+  echo -e "${GREEN}  okay.${NORMAL}"
+  echo
+else
+  echo -e "${RED}  nicht okay.${NORMAL}"
+  echo
+  echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
+  exit 1
+fi
+
+echo -e "${WHITE}Lade 'apktool'  herunter ...${NORMAL}"
+echo "Info: Debian liefert eine nicht ohne weiteres funktionierende 'dirty'-Version mit. Daher der externe Download."
+wget -q -O tools/apktool https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
+chmod 755 tools/apktool
+wget -q -O tools/apktool.jar https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.4.0.jar
+if [ $? = 0 ]; then
+  echo -e "${GREEN}  okay.${NORMAL}"
+  echo
+else
+  echo -e "${RED}  nicht okay.${NORMAL}"
+  echo
+  echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
+  exit 1
+fi
