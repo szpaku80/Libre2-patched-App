@@ -213,7 +213,9 @@ if [ -d /mnt/c/ ]; then
   if [ $? = 0 ]; then
     echo -e "${GREEN}  okay.${NORMAL}"
     echo
-  echo -e "${YELLOW}Fertig! Die gepatchte und signierte APK Datei finden Sie unter C:\\APK\\${FILENAME}_patched.apk${NORMAL}"
+  echo -en "${YELLOW}Fertig! Die gepatchte und signierte APK Datei finden Sie unter C:\\APK"
+  echo -en "\\"
+  echo -e "${FILENAME}_patched.apk${NORMAL}"
   else
     echo -e "${RED}  nicht okay.${NORMAL}"
     echo
