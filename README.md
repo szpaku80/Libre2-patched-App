@@ -30,11 +30,11 @@ Mittels `git clone https://github.com/TinoKossmann/LibreLink-xDrip-Patch` wird d
 
 * Installation weiterer Tools
 
-Weitere, benötigte Tools werden nun Mittels `./install-apt-dependencies.sh` (Tipp: auch hier, `./inst` eintippen und Tabulator-Taste drücken) installiert. Sollte auch hier wieder nach einem Passwort gefragt werden, handelt es sich um das vorhin vergebene. Die Frage nach der Paketliste wird wieder bestätigt.
+Weitere, benötigte Tools werden nun mittels `./install-apt-dependencies.sh` (Tipp: auch hier, `./inst` eintippen und Tabulator-Taste drücken) installiert. Sollte auch hier wieder nach einem Passwort gefragt werden, handelt es sich um das vorhin vergebene. Die Frage nach der Paketliste wird wieder bestätigt.
 
 * Laden der original LibreLink App
 
-Wer die original APK-Datei nicht selbst herunterladen möchte, kann diese Mittels `./download.sh` herunterladen. Dabei wird auch das zusätzlich benötigte Tool apktool installiert, welches im Debian-Repository in einer nicht ohne weiteres funktionierenden Version enthalten ist.
+Wer die original APK-Datei nicht selbst herunterladen möchte, kann diese mittels `./download.sh` herunterladen. Dabei wird auch das zusätzlich benötigte Tool apktool installiert, welches im Debian-Repository in einer nicht ohne weiteres funktionierenden Version enthalten ist.
 
 * Patchen und Signieren der App
 
