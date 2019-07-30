@@ -50,7 +50,7 @@ Die gepatchte App läuft als sog. "Vordergrunddienst". Es ist daher normal, dass
 
 ---
 
-# Original Anleitung in englisch #
+# Original Anleitung in Englisch #
 
 # How to patch the Librelink app to provide xDrip with Value received by bluetooth directly from sensor
 
