@@ -8,7 +8,7 @@ Um die gepatchte App auf einem Android Smartphone installieren zu können, muss 
 
 Die original LibreLink App muss vor der Installation deinstalliert werden. **Dabei geht die Kopplung zum aktuell laufenden Sensor verloren!** Sinnvollerweise wird der Wechsel der App daher beim Wechsel eines Sensors durchgeführt. Sobald die gepatchte App installiert wurde, müssen ihr noch Rechte auf "Standort" (für Bluetooth-Nutzung) und "Speicher" gewährt werden (in neueren Android-Versionen unter "Einstellungen - Apps & Benachrichtigungen - LibreLink - Berechtigungen", ansonsten ggf. den Menüpunkt "Alarme" in der App öffnen und prüfen, ob man dort nach Rechten gefragt wird). Danach kann ein neuer Sensor gekoppelt und die App wie gewohnt genutzt werden.
 
-In den neueren Versionen von xDrip+ (ab ["Nightly Build" vom 15. Juli 2019 oder später](https://github.com/NightscoutFoundation/xDrip/releases) gibt es in den Einstellungen die Datenquelle "Libre2 (patched App)". Diese ist auszuwählen, um die Werte ohne klassisches Scannen angezeigt zu bekommen. Es kann etwas dauern, bis die ersten Werte in xDrip+ erscheinen.
+In den neueren Versionen von xDrip+ (ab ["Nightly Build" vom 15. Juli 2019 oder später](https://github.com/NightscoutFoundation/xDrip/releases) (auf das obere "Assets" klicken und die APK Datei herunterladen) gibt es in den Einstellungen die Datenquelle "Libre2 (patched App)". Diese ist auszuwählen, um die Werte ohne klassisches Scannen angezeigt zu bekommen. Es kann etwas dauern, bis die ersten Werte in xDrip+ erscheinen.
 
 **Vorgehen:**
 
