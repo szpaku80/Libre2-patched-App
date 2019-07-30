@@ -1,3 +1,57 @@
+# Anleitung zum Patchen der App "LibreLink" unter Windows #
+
+**Grundsätzliches:**
+
+Wenn LibreLink als erstes "Gerät" mit einem FreeStyle Libre 2 gekoppelt wird, empfängt es permanent Bluetooth-Daten, um den aktuellen Gewebezucker-Wert zu berechnen und ggf. Alarm zu geben. Angezeigt werden diese Daten jedoch nur, wenn "klassisch" gescannt (der Sensor per NFC ausgelesen) wird. Dieser Patch ermöglicht nun, dass [xDrip+](https://github.com/jamorham/xDrip-plus) die errechneten Werte von LibreLink auslesen kann.
+
+Um die gepatchte App auf einem Android Smartphone installieren zu können, muss auf selbigem in den Einstellungen das "Installieren aus unbekannten Quellen" erlaubt, bzw. unter neueren Android-Versionen eine entsprechende App berechtigt werden, "unbekannte Apps zu installieren".
+
+Die original LibreLink App muss vor der Installation deinstalliert werden. **Dabei geht die Kopplung zum aktuell laufenden Sensors verloren!** Sinnvollerweise wird der Wechsel der App daher beim Wechsel eines Sensors durchgeführt. Sobald die gepatchte App installiert wurde, müssen ihr noch Rechte auf "Standort" (für Bluetooth-Nutzung) und "Speicher" gewährt werden (in neueren Android-Versionen unter "Einstellungen - Apps & Benachrichtigungen - LibreLink - Berechtigungen", ansonsten ggf. den Menüpunkt "Alarme" in der App öffnen). Danach kann ein neuer Sensor gekoppelt und die App wie gewohnt genutzt werden.
+
+In den neueren Versionen von xDrip+ (ab ["Nightly Build" vom 15. Juli 2019 oder später](https://github.com/NightscoutFoundation/xDrip/releases) gibt es in den Einstellungen die Datenquelle "Libre2 (patched App)". Diese ist auszuwählen, um die Werte ohne klassisches Scannen angezeigt zu bekommen. Es kann etwas dauern, bis die ersten Werte in xDrip+ erscheinen.
+
+**Vorgehen:**
+
+Wer Linux nutzt, kann sich an die englische original Anleitung des [ursprünglichen Projekts](https://github.com/user987654321resu/Libre2-patched-App) halten oder die hier enthaltene `patch.sh` nutzen. Für Windows-Nutzer ist folgende Anleitung eventuell hilfreich, welche im Grunde ein Linux SubSystem in Windows installiert und den Patch innerhalb dieses Systems ausführt.
+
+* Installation des Linux SubSystems
+
+In der Windows Systemsteuerung den Punkt "Windows-Features aktivieren oder deaktivieren" wählen (oder dies einfach in der Cortana-Suchleiste eingeben), dort am Ende den Haken bei "Windows-Subsystem für Linux" auswählen und mittels Klick auf "OK" bestätigen. Den anschließend verlangten Neustart unbedingt durchführen.
+Im "Microsoft Store" die App "Debian" installieren bzw. in der [Microsoft Dokumentation](https://docs.microsoft.com/de-de/windows/wsl/install-win10) zu dem Thema den Link "Debian GNU/Linux" auswählen und durch den Store bis zur Installation führen lassen. Anschließend das SubSystem Debian starten.
+
+* Einrichtung des Linux SubSystems
+
+Beim ersten Start des SubSystems wird nach einem Benutzernamen gefragt, der frei wählbar ist. Sinnvollerweise nutzt man hier seinen eigenen Windows-Benutzernamen. Ebenso muss ein Passwort für diesen Benutzer vergeben werden. Hier macht es ggf. auch Sinn, das eigene Windows-Passwort zu setzen (muss aber nicht zwingend sein).
+Das Grundsystem ist nun vorhanden und muss mit benötigten Werkzeugen (Tools) versorgt werden. Dazu wird mittels dem Befehl `sudo apt-get update` die Paketliste auf den neuen Stand gebracht. Das eben vergebene Passwort wird dabei einmal abgefragt und ist einzugeben. Anschließend wird der Git-Client mittels `sudo apt-get install git` installiert. Die Frage, ob alle aufgeführten Pakete installiert werden sollen, wird bestätigt (Enter/Return-Taste drücken reicht dazu aus).
+
+* Clone dieses Repositories
+
+Mittels `git clone https://github.com/TinoKossmann/LibreLink-xDrip-Patch` wird dieses Repository heruntergeladen und anschließend mittels `cd LibreLink-xDrip-Patch` in das neue Verzeichnis gewechselt (Tipp: `cd Li` eintippen und Tabulator-Taste drücken). Bei Bedarf kann nun mittels `ls -l` der Inhalt geprüft werden.
+
+* Installation weiterer Tools
+
+Weitere, benötigte Tools werden nun Mittels `./install-apt-dependencies.sh` (Tipp: auch hier, `./inst` eintippen und Tabulator-Taste drücken) installiert. Sollte auch hier wieder nach einem Passwort gefragt werden, handelt es sich um das vorhin vergebene. Die Frage nach der Paketliste wird wieder bestätigt.
+
+* Laden der original LibreLink App
+
+Wer die original APK-Datei nicht selbst herunterladen möchte, kann diese Mittels `./download.sh` herunterladen. Dabei wird auch das zusätzlich benötigte Tool apktool installiert, welches im Debian-Repository in einer nicht ohne weiteres funktionierenden Version enthalten ist.
+
+* Patchen und Signieren der App
+
+Mittels `./patch.sh` wird alles nötige erledigt. Dies nimmt einige Zeit in Anspruch. Normalerweise sollten alle Schritte mit grünem "okay" abgeschlossen werden und am Ende der Hinweis erscheinen, dass die gepatchte APK-Datei im Verzeichnis C:\APK\ zu finden ist.
+
+**Video Walkthrough:**
+
+In [diesem Video](https://www.youtube.com/watch?v=ezpGM2jR89A) ist die Anleitung einmal durchgespielt worden.
+
+**Weitere Hinweise:**
+
+Die gepatchte App läuft als sog. "Vordergrunddienst". Es ist daher normal, dass oben in der Taskleiste eine "Foreground Service Notification" erscheint.
+
+---
+
+# Original Anleitung in englisch #
+
 # How to patch the Librelink app to provide xDrip with Value received by bluetooth directly from sensor
 
 
