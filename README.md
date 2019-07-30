@@ -38,7 +38,7 @@ Wer die original APK-Datei nicht selbst herunterladen möchte, kann diese mittel
 
 * Patchen und Signieren der App
 
-Mittels `./patch.sh` wird alles nötige erledigt. Dies nimmt einige Zeit in Anspruch. Normalerweise sollten alle Schritte mit grünem "okay" abgeschlossen werden und am Ende der Hinweis erscheinen, dass die gepatchte APK-Datei im Verzeichnis C:\APK\ zu finden ist.
+Mittels `./patch.sh` wird alles nötige erledigt. Dies nimmt einige Zeit in Anspruch. Normalerweise sollten alle Schritte mit grünem "okay" abgeschlossen werden und am Ende der Hinweis erscheinen, dass die gepatchte APK-Datei im Verzeichnis C:\APK\ zu finden ist. Per `exit` kann das Fenster nun geschlossen werden.
 
 **Video Walkthrough:**
 
