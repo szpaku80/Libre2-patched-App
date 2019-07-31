@@ -11,7 +11,10 @@ WORKDIR=$(pwd)
 FILENAME='com.freestylelibre.app.de_2019-04-22'
 
 echo -e "${WHITE}Lade original APK herunter ...${NORMAL}"
-wget -q -O APK/${FILENAME}.apk http://bit.ly/2Oo97Nv
+#wget -q -O APK/${FILENAME}.apk http://bit.ly/2Oo97Nv
+# PROBLEM: need a fix link for download !!!
+wget -q -O APK/${FILENAME}.apk https://www.kossmann.org/com.freestylelibre.app.de_2019-04-22.apk
+
 if [ $? = 0 ]; then
   echo -e "${GREEN}  okay.${NORMAL}"
   echo
