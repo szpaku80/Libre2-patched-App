@@ -48,6 +48,10 @@ In [diesem Video](https://www.youtube.com/watch?v=ezpGM2jR89A) ist die Anleitung
 
 Die gepatchte App läuft als sog. "Vordergrunddienst". Es ist daher normal, dass oben in der Taskleiste eine "Foreground Service Notification" erscheint.
 
+Die Verbindung zu LibreView bzw. allen Onlinediensten von Abbott wurden entfernt.
+
+Weiterhin gilt die Einschränkung, dass ein per Smartphone gestarteter Sensor nicht mit dem Lesegerät ausgelesen werden kann.
+
 ---
 
 # Original Anleitung in Englisch #
