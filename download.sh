@@ -11,10 +11,9 @@ WORKDIR=$(pwd)
 FILENAME='com.freestylelibre.app.de_2019-04-22'
 
 echo -e "${WHITE}Lade original APK herunter ...${NORMAL}"
-#wget -q -O APK/${FILENAME}.apk http://bit.ly/2Oo97Nv
-# PROBLEM: need a fix link for download !!!
-wget -q -O APK/${FILENAME}.apk https://www.kossmann.org/com.freestylelibre.app.de_2019-04-22.apk
-
+wget -O APK/apkpure.html --keep-session-cookies --save-cookies cookies.txt https://apkpure.com/de/freestyle-librelink-de/com.freestylelibre.app.de/download/4751-APK
+URL=$(grep "hier klicken" APK/apkpure.html | sed 's#^.*https://##' | sed 's/">.*//')
+wget -O APK/${FILENAME}.apk --load-cookies cookies.txt https://${URL}
 if [ $? = 0 ]; then
   echo -e "${GREEN}  okay.${NORMAL}"
   echo
@@ -24,6 +23,8 @@ else
   echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
   exit 1
 fi
+rm cookies.txt
+rm APK/apkpure.html
 
 echo -e "${WHITE}Lade 'apktool' herunter ...${NORMAL}"
 echo "Info: Debian liefert eine nicht ohne weiteres funktionierende 'dirty'-Version mit. Daher der externe Download."
