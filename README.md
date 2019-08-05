@@ -50,7 +50,7 @@ Die gepatchte App läuft als sog. "Vordergrunddienst". Es ist daher normal, dass
 
 Die Verbindung zu LibreView bzw. allen Onlinediensten von Abbott wurden entfernt.
 
-Weiterhin gilt die Einschränkung, dass ein per Smartphone gestarteter Sensor nicht mit dem Lesegerät ausgelesen werden kann.
+Weiterhin gilt die Einschränkung, dass ein per Smartphone gestarteter Sensor nicht mit dem Lesegerät ausgelesen werden kann. Die Nutzung der gepatchten App und ihrer Vorteile bedeutet also zwangsweise, dass das Lesegerät nicht mehr genutzt werden kann.
 
 ---
 
