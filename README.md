@@ -34,7 +34,7 @@ Weitere, benötigte Tools werden nun mittels `./install-apt-dependencies.sh` (Ti
 
 * Laden der original LibreLink App
 
-Wer die original APK-Datei nicht selbst herunterladen möchte, kann diese mittels `./download.sh` herunterladen. Dabei wird auch das zusätzlich benötigte Tool apktool installiert, welches im Debian-Repository in einer nicht ohne weiteres funktionierenden Version enthalten ist.
+Wer die original APK-Datei nicht selbst herunterladen möchte, kann diese mittels `./download.sh` herunterladen. Dabei wird auch das zusätzlich benötigte Tool apktool installiert, welches im Debian-Repository in einer hier nicht ohne weiteres funktionierenden Version enthalten ist.
 
 * Patchen und Signieren der App
 
