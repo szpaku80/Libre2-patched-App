@@ -195,6 +195,8 @@ fi
 echo -e "${WHITE}Signiere gepatchte APK Datei ...${NORMAL}"
 if [ -x /usr/lib/android-sdk/build-tools/debian/apksigner.jar ]; then
   java -jar /usr/lib/android-sdk/build-tools/debian/apksigner.jar sign --ks-pass pass:geheim --ks /tmp/libre-keystore.p12 APK/${FILENAME}_patched.apk
+elif [ -x /usr/share/apksigner/apksigner.jar ]; then
+  java -jar /usr/share/apksigner/apksigner.jar sign --ks-pass pass:geheim --ks /tmp/libre-keystore.p12 APK/${FILENAME}_patched.apk
 else
   apksigner sign --ks-pass pass:geheim --ks /tmp/libre-keystore.p12 APK/${FILENAME}_patched.apk
 fi
