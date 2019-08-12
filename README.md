@@ -21,7 +21,7 @@ Im "Microsoft Store" die App "Debian" installieren bzw. in der [Microsoft Dokume
 
 * Einrichtung des Linux SubSystems
 
-Beim ersten Start des SubSystems wird nach einem Benutzernamen gefragt, der frei wählbar ist. Sinnvollerweise nutzt man hier seinen eigenen Windows-Benutzernamen. Ebenso muss ein Passwort für diesen Benutzer vergeben werden. Hier macht es ggf. auch Sinn, das eigene Windows-Passwort zu setzen (muss aber nicht zwingend sein).
+Beim ersten Start des SubSystems wird nach einem Benutzernamen gefragt, der frei wählbar ist (hier aber bitte nur Kleinbuchstaben verwenden, ggf. Ziffern dahinter - keine Großbuchstaben). Sinnvollerweise nutzt man hier seinen eigenen Windows-Benutzernamen. Ebenso muss ein Passwort für diesen Benutzer vergeben werden. Hier macht es ggf. auch Sinn, das eigene Windows-Passwort zu setzen (muss aber beides nicht zwingend sein).
 Das Grundsystem ist nun vorhanden und muss mit benötigten Werkzeugen (Tools) versorgt werden. Dazu wird mittels dem Befehl `sudo apt-get update` die Paketliste auf den neuen Stand gebracht. Das eben vergebene Passwort wird dabei einmal abgefragt und ist einzugeben. Anschließend wird der Git-Client mittels `sudo apt-get install git` installiert. Die Frage, ob alle aufgeführten Pakete installiert werden sollen, wird bestätigt (Enter/Return-Taste drücken reicht dazu aus).
 
 * Clone dieses Repositories
