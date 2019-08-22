@@ -10,6 +10,10 @@ YELLOW='\033[1;33m'
 WORKDIR=$(pwd)
 FILENAME='com.freestylelibre.app.de_2019-04-22'
 
+# wget HSTS-bugfix for debian as subsystem in Windows
+touch ~/.wget-hsts
+chmod 644 ~/.wget-hsts
+
 echo -e "${WHITE}Lade original APK herunter ...${NORMAL}"
 wget -O APK/apkpure.html --keep-session-cookies --save-cookies cookies.txt https://apkpure.com/de/freestyle-librelink-de/com.freestylelibre.app.de/download/4751-APK
 URL=$(grep "hier klicken" APK/apkpure.html | sed 's#^.*https://##' | sed 's/">.*//')
