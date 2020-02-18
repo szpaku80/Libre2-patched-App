@@ -50,7 +50,11 @@ Die gepatchte App läuft als sog. "Vordergrunddienst". Es ist daher normal, dass
 
 Die Verbindung zu LibreView bzw. allen Onlinediensten von Abbott wurden entfernt.
 
-Weiterhin gilt die Einschränkung, dass ein per Smartphone gestarteter Sensor nicht mit dem Lesegerät ausgelesen werden kann. Die Nutzung der gepatchten App und ihrer Vorteile bedeutet also zwangsweise, dass das Lesegerät nicht mehr für diesen Sensor genutzt werden kann.
+Weiterhin gilt die Einschränkung, dass ein per Smartphone gestarteter Sensor nicht mit dem Lesegerät ausgelesen werden kann. Die Nutzung der gepatchten App und ihrer Vorteile bedeutet zwangsweise, dass das Lesegerät nicht mehr für diesen Sensor genutzt werden kann.
+
+LibreLink 2.3.0 erfordert Android 5.0 oder höher.
+
+Eine gute Anleitung zum Umgang mit xDrip+ in Verbindung mit der gepatchten App findet man u.a. [hier](https://androidaps.readthedocs.io/en/latest/CROWDIN/de/Hardware/Libre2.html).
 
 **Grundsätzliches Vorgehen:**
 
