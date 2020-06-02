@@ -15,6 +15,7 @@ FILENAME_240='com.freestylelibre.app.de_2020-02-15'
 touch ~/.wget-hsts
 chmod 644 ~/.wget-hsts
 
+# disable certificate check
 if [ ! -e ~/.wgetrc ] ; then
   echo "check_certificate = off" >> ~/.wgetrc
 fi
