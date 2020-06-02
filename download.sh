@@ -15,6 +15,10 @@ FILENAME_240='com.freestylelibre.app.de_2020-02-15'
 touch ~/.wget-hsts
 chmod 644 ~/.wget-hsts
 
+if [ ! -e ~/.wgetrc ] ; then
+  echo "check_certificate = off" >> ~/.wgetrc
+fi
+
 echo -e "${WHITE}Lade original APK Version 2.3.0 herunter ...${NORMAL}"
 wget -O APK/apkpure.html --keep-session-cookies --save-cookies cookies.txt https://apkpure.com/de/freestyle-librelink-de/com.freestylelibre.app.de/download/4751-APK
 URL=$(grep "hier klicken" APK/apkpure.html | sed 's#^.*https://##' | sed 's/">.*//')
@@ -31,21 +35,21 @@ fi
 rm cookies.txt
 rm APK/apkpure.html
 
-echo -e "${WHITE}Lade original APK Version 2.4.0 herunter ...${NORMAL}"
-wget -O APK/apkpure.html --keep-session-cookies --save-cookies cookies.txt https://apkpure.com/de/freestyle-librelink-de/com.freestylelibre.app.de/download/5417-APK
-URL=$(grep "hier klicken" APK/apkpure.html | sed 's#^.*https://##' | sed 's/">.*//')
-wget -O APK/${FILENAME_240}.apk --load-cookies cookies.txt https://${URL}
-if [ $? = 0 ]; then
-  echo -e "${GREEN}  okay.${NORMAL}"
-  echo
-else
-  echo -e "${RED}  nicht okay.${NORMAL}"
-  echo
-  echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
-  exit 1
-fi
-rm cookies.txt
-rm APK/apkpure.html
+#echo -e "${WHITE}Lade original APK Version 2.4.0 herunter ...${NORMAL}"
+#wget -O APK/apkpure.html --keep-session-cookies --save-cookies cookies.txt https://apkpure.com/de/freestyle-librelink-de/com.freestylelibre.app.de/download/5417-APK
+#URL=$(grep "hier klicken" APK/apkpure.html | sed 's#^.*https://##' | sed 's/">.*//')
+#wget -O APK/${FILENAME_240}.apk --load-cookies cookies.txt https://${URL}
+#if [ $? = 0 ]; then
+#  echo -e "${GREEN}  okay.${NORMAL}"
+#  echo
+#else
+#  echo -e "${RED}  nicht okay.${NORMAL}"
+#  echo
+#  echo -e "${YELLOW}=> Bitte prüfen Sie o.a. Fehler.${NORMAL}"
+#  exit 1
+#fi
+#rm cookies.txt
+#rm APK/apkpure.html
 
 echo -e "${WHITE}Lade 'apktool' herunter ...${NORMAL}"
 echo "Info: Debian liefert eine nicht ohne weiteres funktionierende 'dirty'-Version mit. Daher der externe Download."
