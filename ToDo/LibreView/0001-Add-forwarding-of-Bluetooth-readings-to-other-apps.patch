@@ -1,0 +1,584 @@
+From bc8da8cfbca2bb5c5ebc905eaf8a76b1fff95d5c Mon Sep 17 00:00:00 2001
+From: smos <smos+librelink@posteo.eu>
+Date: Mon, 23 Sep 2019 13:48:11 +0200
+Subject: [PATCH 1/2] Add forwarding of Bluetooth readings to other apps
+
+---
+ AndroidManifest.xml                           |  4 +-
+ .../com/librelink/app/core/App.smali          | 20 ++++++
+ .../librelink/app/core/BleManager$3$2.smali   |  4 ++
+ .../com/librelink/app/core/BleManager$3.smali |  7 ++
+ .../com/librelink/app/core/BleManager$5.smali |  2 +-
+ .../com/librelink/app/core/BleManager.smali   | 49 ++++++++++++-
+ .../ApplicationConfigurationValues.smali      | 69 +++++++++++++++++-
+ .../app/ui/common/ScanSensorFragment.smali    | 72 ++++++++++++++++++-
+ 8 files changed, 222 insertions(+), 5 deletions(-)
+
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index 873d5569..4d1e9bfa 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -15,9 +15,10 @@
+     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+     <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"/>
+     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
++	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+     <permission android:name="com.freestylelibre.app.de.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+     <uses-permission android:name="com.freestylelibre.app.de.permission.C2D_MESSAGE"/>
+-    <application android:allowBackup="true" android:fullBackupContent="@xml/backup_config" android:icon="@mipmap/ic_launcher" android:label="@string/application_name" android:name="com.librelink.app.core.App" android:roundIcon="@mipmap/ic_launcher_round" android:supportsRtl="true" android:theme="@style/Theme.Apollo">
++    <application android:debuggable="true" android:allowBackup="true" android:fullBackupContent="@xml/backup_config" android:icon="@mipmap/ic_launcher" android:label="@string/application_name" android:name="com.librelink.app.core.App" android:roundIcon="@mipmap/ic_launcher_round" android:supportsRtl="true" android:theme="@style/Theme.Apollo">
+         <meta-data android:name="android.max_aspect" android:value="2.1"/>
+         <activity android:launchMode="singleTop" android:name="com.librelink.app.ui.SplashActivity" android:noHistory="true" android:screenOrientation="portrait" android:theme="@style/Theme.Apollo">
+             <intent-filter>
+@@ -86,6 +87,7 @@
+         <receiver android:enabled="true" android:name="com.librelink.app.core.alarms.SensorExpireCheckAlarmReceiver"/>
+         <service android:exported="false" android:name="com.librelink.app.services.ReminderService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+         <service android:exported="false" android:name="com.librelink.app.services.SendTroubleshootingDataService" android:permission="android.permission.BIND_JOB_SERVICE"/>
++        <service android:exported="false" android:name="com.librelink.app.ForegroundService" />
+         <receiver android:name="com.librelink.app.services.SendTroubleshootingDataService$RetryReceiver"/>
+         <receiver android:name="com.librelink.app.receivers.SensorStatusReceiver">
+             <intent-filter>
+diff --git a/smali_classes2/com/librelink/app/core/App.smali b/smali_classes2/com/librelink/app/core/App.smali
+index e4ae2a39..e058e618 100644
+--- a/smali_classes2/com/librelink/app/core/App.smali
++++ b/smali_classes2/com/librelink/app/core/App.smali
+@@ -65,6 +65,18 @@
+     return-void
+ .end method
+ 
++.method public getPackageCodePath()Ljava/lang/String;
++    .registers 2
++
++    .prologue
++    .line 13
++    invoke-static {p0}, Lcom/librelink/app/APKExtractor;->getOriginalAPKPath(Landroid/app/Application;)Ljava/lang/String;
++
++    move-result-object v0
++
++    return-object v0
++.end method
++
+ .method public static get(Landroid/content/Context;)Lcom/librelink/app/core/App;
+     .locals 0
+ 
+@@ -369,6 +381,14 @@
+     .line 83
+     invoke-super {p0}, Landroid/app/Application;->onCreate()V
+ 
++    invoke-static {}, Lcom/librelink/app/CrashReportUtil;->setDefaultUncaughtExceptionHandler()V
++	
++    invoke-static {p0}, Lcom/librelink/app/ForegroundService;->initialize(Landroid/content/Context;)V
++
++    invoke-static {p0}, Lcom/librelink/app/ThirdPartyIntegration;->injectContext(Landroid/content/Context;)V
++
++    invoke-static {p0}, Lcom/librelink/app/APKExtractor;->extractOriginalAPK(Landroid/app/Application;)V
++
+     .line 85
+     invoke-static {}, Lcom/librelink/app/core/components/DaggerAppComponent;->builder()Lcom/librelink/app/core/components/DaggerAppComponent$Builder;
+ 
+diff --git a/smali_classes2/com/librelink/app/core/BleManager$3$2.smali b/smali_classes2/com/librelink/app/core/BleManager$3$2.smali
+index ae28bf89..1844a0bb 100644
+--- a/smali_classes2/com/librelink/app/core/BleManager$3$2.smali
++++ b/smali_classes2/com/librelink/app/core/BleManager$3$2.smali
+@@ -116,6 +116,8 @@
+ 
+     iget-object v1, v1, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+ 
++	invoke-static {v1, v0}, Lcom/librelink/app/ThirdPartyIntegration;->sendGlucoseBroadcast(Lcom/librelink/app/core/BleManager;Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/CurrentGlucose;)V
++
+     new-instance v2, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+@@ -184,6 +186,8 @@
+ 
+     iget-object v1, v1, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+ 
++	invoke-static {v1, v0}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorBLEExceptionBroadcast(Lcom/librelink/app/core/BleManager;Ljava/lang/Throwable;)V
++
+     new-instance v2, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+diff --git a/smali_classes2/com/librelink/app/core/BleManager$3.smali b/smali_classes2/com/librelink/app/core/BleManager$3.smali
+index d0442aab..e7d8f53d 100644
+--- a/smali_classes2/com/librelink/app/core/BleManager$3.smali
++++ b/smali_classes2/com/librelink/app/core/BleManager$3.smali
+@@ -183,6 +183,9 @@
+     .line 363
+     iget-object p2, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+ 
++	invoke-static {p2, p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendCharacteristicValueBroadcast(Lcom/librelink/app/core/BleManager;[B)V
++
++
+     new-instance v3, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
+@@ -555,6 +558,8 @@
+     :goto_0
+     iget-object v1, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+ 
++    invoke-static {v1, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendConnectionStateBroadcast(Lcom/librelink/app/core/BleManager;I)V
++
+     new-instance v2, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
+@@ -635,6 +640,8 @@
+     :cond_0
+     iget-object p1, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+ 
++    invoke-static {p1, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendRSSIBroadcast(Lcom/librelink/app/core/BleManager;I)V
++
+     new-instance p3, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {p3}, Ljava/lang/StringBuilder;-><init>()V
+diff --git a/smali_classes2/com/librelink/app/core/BleManager$5.smali b/smali_classes2/com/librelink/app/core/BleManager$5.smali
+index 8daafb29..f09852ac 100644
+--- a/smali_classes2/com/librelink/app/core/BleManager$5.smali
++++ b/smali_classes2/com/librelink/app/core/BleManager$5.smali
+@@ -186,7 +186,7 @@
+     const-wide/16 v2, 0x0
+ 
+     invoke-static {p1, v2, v3}, Lcom/librelink/app/core/BleManager;->access$400(Lcom/librelink/app/core/BleManager;J)V
+-
++    invoke-static {p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendFoundDeviceBroadcast(Lcom/librelink/app/core/BleManager;)V
+     return v1
+ 
+     .line 568
+diff --git a/smali_classes2/com/librelink/app/core/BleManager.smali b/smali_classes2/com/librelink/app/core/BleManager.smali
+index a8908eca..0f131005 100644
+--- a/smali_classes2/com/librelink/app/core/BleManager.smali
++++ b/smali_classes2/com/librelink/app/core/BleManager.smali
+@@ -354,11 +354,56 @@
+ .end method
+ 
+ .method private DEVLOG(Ljava/lang/String;)V
+-    .locals 0
++    .registers 3
++    .param p1, "str"    # Ljava/lang/String;
++
++    .prologue
++    .line 28
++    const-string v0, "PatchedBleManager"
++
++    invoke-static {v0, p1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    .line 29
+ 
+     return-void
+ .end method
+ 
++.method public getSAS()Lcom/librelink/app/types/SAS;
++    .registers 2
++
++    .prologue
++    .line 32
++    iget-object v0, p0, Lcom/librelink/app/core/BleManager;->mSAS:Ljavax/inject/Provider;
++
++    invoke-interface {v0}, Ljavax/inject/Provider;->get()Ljava/lang/Object;
++
++    move-result-object v0
++
++    check-cast v0, Lcom/librelink/app/types/SAS;
++
++    return-object v0
++.end method
++
++.method public getSensorAddress()Ljava/lang/String;
++    .registers 2
++
++    .prologue
++    .line 20
++    iget-object v0, p0, Lcom/librelink/app/core/BleManager;->mActiveDeviceAddress:Ljava/lang/String;
++
++    return-object v0
++.end method
++
++.method public getSensorSerial()Ljava/lang/String;
++    .registers 2
++
++    .prologue
++    .line 24
++    iget-object v0, p0, Lcom/librelink/app/core/BleManager;->mActiveDeviceSerialNumber:Ljava/lang/String;
++
++    return-object v0
++.end method
++
+ .method static synthetic access$000(Lcom/librelink/app/core/BleManager;Z)V
+     .locals 0
+ 
+@@ -1303,6 +1348,8 @@
+     :goto_1
+     invoke-direct {p0}, Lcom/librelink/app/core/BleManager;->reportAvailabilityChange()V
+ 
++	invoke-static {p0}, Lcom/librelink/app/ThirdPartyIntegration;->sendInitializeBluetoothBroadcast(Lcom/librelink/app/core/BleManager;)V
++
+     return-void
+ .end method
+ 
+diff --git a/smali_classes2/com/librelink/app/types/ApplicationConfigurationValues.smali b/smali_classes2/com/librelink/app/types/ApplicationConfigurationValues.smali
+index bef3d8f0..1fb63d71 100644
+--- a/smali_classes2/com/librelink/app/types/ApplicationConfigurationValues.smali
++++ b/smali_classes2/com/librelink/app/types/ApplicationConfigurationValues.smali
+@@ -33,10 +33,77 @@
+ 
+ # direct methods
+ .method public constructor <init>()V
+-    .locals 0
++.registers 2
+ 
++    .prologue
+     .line 3
+     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+ 
++    .line 5
++    const/high16 v0, 0x41200000    # 10.0f
++
++    iput v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->appDefaultServingSize:F
++
++    .line 6
++    const/4 v0, 0x0
++
++    iput v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->appMinimumAge:I
++
++    .line 7
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->appProductStandardNumber:Ljava/lang/String;
++
++    .line 8
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->appRegistrationNumber:Ljava/lang/String;
++
++    .line 9
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->newYuApiKey:Ljava/lang/String;
++
++    .line 10
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->newYuDomain:Ljava/lang/String;
++
++    .line 11
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->newYuGateway:Ljava/lang/String;
++
++    .line 12
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->newYuShareUrl:Ljava/lang/String;
++
++    .line 13
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->newYuUrl:Ljava/lang/String;
++
++    .line 14
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->oneStepAudience:Ljava/lang/String;
++
++    .line 15
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->oneStepBaseUrl:Ljava/lang/String;
++
++    .line 16
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->oneStepIssuer:Ljava/lang/String;
++
++    .line 17
++    const-string v0, ""
++
++    iput-object v0, p0, Lcom/librelink/app/types/ApplicationConfigurationValues;->oneStepSubject:Ljava/lang/String;
++
++
+     return-void
+ .end method
+diff --git a/smali_classes2/com/librelink/app/ui/common/ScanSensorFragment.smali b/smali_classes2/com/librelink/app/ui/common/ScanSensorFragment.smali
+index 0a79f1e1..7c60fb7f 100644
+--- a/smali_classes2/com/librelink/app/ui/common/ScanSensorFragment.smali
++++ b/smali_classes2/com/librelink/app/ui/common/ScanSensorFragment.smali
+@@ -172,7 +172,6 @@
+     .end annotation
+ .end field
+ 
+-
+ # direct methods
+ .method public constructor <init>()V
+     .locals 1
+@@ -287,6 +286,7 @@
+ 
+     .line 487
+     :cond_3
++	
+     iget-object p4, p0, Lcom/librelink/app/ui/common/ScanSensorFragment;->previousSensor:Lcom/librelink/app/prefs/SharedPreference;
+ 
+     const/4 v0, 0x0
+@@ -473,11 +473,16 @@
+     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+ 
+     :goto_3
++	
++	invoke-static {p0, p5}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorActivateBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;)V
++	
+     return-object p3
+ 
+     :catch_0
+     move-exception p1
+ 
++	invoke-static {p0, p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 570
+     new-instance p2, Lcom/librelink/app/core/AppError;
+ 
+@@ -490,12 +495,16 @@
+     :catch_1
+     move-exception p1
+ 
++	invoke-static {p0, p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 566
+     throw p1
+ 
+     :catch_2
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 561
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -511,6 +520,8 @@
+     :catch_3
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 556
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -526,6 +537,8 @@
+     :catch_4
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 551
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -541,6 +554,8 @@
+     :catch_5
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 546
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -556,6 +571,8 @@
+     :catch_6
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 541
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -571,6 +588,8 @@
+     :catch_7
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 536
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -586,6 +605,8 @@
+     :catch_8
+     move-exception p1
+ 
++	invoke-static {p0, p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCActivateExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 532
+     new-instance p2, Lcom/librelink/app/core/AppError;
+ 
+@@ -1588,6 +1609,7 @@
+ 
+     .line 594
+     :cond_0
++	
+     invoke-interface {p3, v0}, Lcom/librelink/app/types/SAS;->getLatestRealTimeGlucoseReading(Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;)Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/RealTimeGlucose;
+ 
+     move-result-object v1
+@@ -1676,6 +1698,8 @@
+ 
+     move-result-object v1
+ 
++	invoke-static {p0, v0}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorScanBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;)V
++
+     .line 607
+     iget-object v2, p0, Lcom/librelink/app/ui/common/ScanSensorFragment;->mAnalytics:Lcom/librelink/app/types/Analytics;
+ 
+@@ -1731,6 +1755,8 @@
+     :catch_0
+     move-exception p1
+ 
++	invoke-static {p0, p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 702
+     new-instance p2, Lcom/librelink/app/core/AppError;
+ 
+@@ -1743,12 +1769,16 @@
+     :catch_1
+     move-exception p1
+ 
++	invoke-static {p0, p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 698
+     throw p1
+ 
+     :catch_2
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 693
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1764,6 +1794,8 @@
+     :catch_3
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 688
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1779,6 +1811,8 @@
+     :catch_4
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 683
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1794,6 +1828,8 @@
+     :catch_5
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 678
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1809,6 +1845,8 @@
+     :catch_6
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 673
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1824,6 +1862,8 @@
+     :catch_7
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 668
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1839,6 +1879,8 @@
+     :catch_8
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 663
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1854,6 +1896,8 @@
+     :catch_9
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 654
+     iget-object v0, p0, Lcom/librelink/app/ui/common/ScanSensorFragment;->mAnalytics:Lcom/librelink/app/types/Analytics;
+ 
+@@ -1898,6 +1942,8 @@
+     :catch_a
+     move-exception v0
+ 
++	invoke-static {p0, v0}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 636
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1945,6 +1991,8 @@
+     :catch_b
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 631
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1960,6 +2008,8 @@
+     :catch_c
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 626
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -1975,6 +2025,8 @@
+     :catch_d
+     move-exception p1
+ 
++	invoke-static {p0, p1}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 622
+     new-instance p2, Lcom/librelink/app/core/AppError;
+ 
+@@ -1987,6 +2039,8 @@
+     :catch_e
+     move-exception p3
+ 
++	invoke-static {p0, p3}, Lcom/librelink/app/ThirdPartyIntegration;->sendSensorNFCScanExceptionBroadcast(Lcom/librelink/app/ui/common/ScanSensorFragment;Ljava/lang/Throwable;)V
++
+     .line 616
+     invoke-direct {p0, p1, p2}, Lcom/librelink/app/ui/common/ScanSensorFragment;->debounceTagDetection(Landroid/content/Context;Landroid/nfc/Tag;)V
+ 
+@@ -2138,6 +2192,22 @@
+     return-void
+ .end method
+ 
++.method public getSAS()Lcom/librelink/app/types/SAS;
++    .registers 2
++
++    .prologue
++    .line 32
++    iget-object v0, p0, Lcom/librelink/app/ui/common/ScanSensorFragment;->sasProvider:Ljavax/inject/Provider;
++
++    invoke-interface {v0}, Ljavax/inject/Provider;->get()Ljava/lang/Object;
++
++    move-result-object v0
++
++    check-cast v0, Lcom/librelink/app/types/SAS;
++
++    return-object v0
++.end method
++
+ .method public injectWith(Lcom/librelink/app/core/components/AppComponent;)V
+     .locals 0
+ 
+-- 
+2.23.0
+
