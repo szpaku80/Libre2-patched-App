@@ -46,6 +46,8 @@ In [diesem Video](https://www.youtube.com/watch?v=ezpGM2jR89A) ist die Anleitung
 
 **Weitere Hinweise:**
 
+Sollten auf dem PC "Internet Sicherheitssoftware" installiert sein (v.a. "Kaspersky Internet Security 2019" o.ä.), kann es nötig sein, diese temporär zu deaktivieren, da das Linux-Subsystem ansonsten keine Verbindung zum Internet erhält.
+
 Die gepatchte App läuft als sog. "Vordergrunddienst". Es ist daher normal, dass oben in der Taskleiste eine "Foreground Service Notification" erscheint.
 
 Die Verbindung zu LibreView bzw. allen Onlinediensten von Abbott wurden entfernt.
