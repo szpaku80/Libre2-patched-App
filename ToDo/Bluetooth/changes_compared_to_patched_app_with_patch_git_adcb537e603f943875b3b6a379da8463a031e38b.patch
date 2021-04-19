@@ -1,0 +1,1130 @@
+ build/apk/classes.dex                              | Bin 7963204 -> 7966360 bytes
+ build/apk/classes2.dex                             | Bin 9540508 -> 9541936 bytes
+ ...reamingPreviouslyStartedSensorPredicate$2.smali |   8 +-
+ ...JoiningPreviouslyStartedSensorPredicate$2.smali |   8 +-
+ .../DefaultSensorAbstractionService.smali          | 249 ++++++++++++++++++++-
+ .../sensorabstractionservice/Sensor.smali          |   8 +-
+ .../com/librelink/app/ThirdPartyIntegration.smali  | 240 ++++++++++++++++++++
+ .../com/librelink/app/core/BleManager$3.smali      |  35 ++-
+ .../librelink/app/core/modules/SensorModule.smali  |  48 ++--
+ 9 files changed, 557 insertions(+), 39 deletions(-)
+
+diff --git a/build/apk/classes.dex b/build/apk/classes.dex
+index 8c07a60..7ec9379 100644
+Binary files a/build/apk/classes.dex and b/build/apk/classes.dex differ
+diff --git a/build/apk/classes2.dex b/build/apk/classes2.dex
+index aa55139..974ebad 100644
+Binary files a/build/apk/classes2.dex and b/build/apk/classes2.dex differ
+diff --git a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowEnablingStreamingPreviouslyStartedSensorPredicate$2.smali b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowEnablingStreamingPreviouslyStartedSensorPredicate$2.smali
+index 0e298f2..7500fbd 100644
+--- a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowEnablingStreamingPreviouslyStartedSensorPredicate$2.smali
++++ b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowEnablingStreamingPreviouslyStartedSensorPredicate$2.smali
+@@ -30,9 +30,13 @@
+ 
+ # virtual methods
+ .method public shouldAllowEnablingStreaming(Ljava/lang/String;)Z
+-    .locals 0
++    .locals 2
+ 
+-    const/4 p1, 0x0
++    const/4 p1, 0x1
++    
++    const-string v0, "PatchedSAS"
++    const-string v1, "shouldAllowEnablingStreaming: enable Streaming Workaround active -> enable streaming also if not allowed"
++    invoke-static/range {v0 .. v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     return p1
+ .end method
+diff --git a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowJoiningPreviouslyStartedSensorPredicate$2.smali b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowJoiningPreviouslyStartedSensorPredicate$2.smali
+index 916a515..32b608c 100644
+--- a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowJoiningPreviouslyStartedSensorPredicate$2.smali
++++ b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowJoiningPreviouslyStartedSensorPredicate$2.smali
+@@ -30,9 +30,13 @@
+ 
+ # virtual methods
+ .method public shouldAllowJoiningSensor(Ljava/lang/String;JJ)Z
+-    .locals 0
++    .locals 2
+ 
+-    const/4 p1, 0x0
++    const/4 p1, 0x1
++    
++    const-string v0, "PatchedSAS"
++    const-string v1, "shouldAllowJoiningSensor: enable Joining Workaround active -> enable joining also if not allowed"
++    invoke-static/range {v0 .. v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     return p1
+ .end method
+diff --git a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService.smali b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService.smali
+index 3b163ce..423b1d8 100644
+--- a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService.smali
++++ b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService.smali
+@@ -1584,7 +1584,7 @@
+ .end method
+ 
+ .method private processActivation(Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/User;Ljava/lang/String;II[B[B[BLcom/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowJoiningPreviouslyStartedSensorPredicate;Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowEnablingStreamingPreviouslyStartedSensorPredicate;)Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ProcessActivationResults;
+-    .locals 37
++    .locals 41
+     .annotation system Ldalvik/annotation/Signature;
+         value = {
+             "(",
+@@ -1609,6 +1609,10 @@
+             Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorRemovedException;
+         }
+     .end annotation
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "entering processActivation()"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     move-object/from16 v15, p0
+ 
+@@ -1626,6 +1630,10 @@
+     move-result v1
+ 
+     if-nez v1, :cond_0
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-nez v1, :cond_0"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1261
+     new-instance v1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/MathFailureException;
+@@ -1636,6 +1644,11 @@
+ 
+     .line 1264
+     :cond_0
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_0"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     iget-object v1, v15, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService;->timeOsFunctions:Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/TimeOsFunctions;
+ 
+     invoke-interface {v1}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/TimeOsFunctions;->getCurrentTimeZone()Ljava/util/TimeZone;
+@@ -1679,6 +1692,10 @@
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_0 .. :try_end_0} :catch_7
+ 
+     if-eqz v5, :cond_1
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v5, :cond_1"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1275
+     :try_start_1
+@@ -1687,6 +1704,10 @@
+     move-result v1
+ 
+     if-eqz v1, :cond_1
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v1, :cond_1"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1276
+     new-instance v1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorTerminatedException;
+@@ -1720,6 +1741,11 @@
+ 
+     .line 1279
+     :cond_1
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_1"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     :try_start_2
+     iget-object v1, v15, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService;->dataProcessing:Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;
+ 
+@@ -1842,6 +1868,10 @@
+     sub-long v3, v1, v3
+ 
+     if-nez v5, :cond_2
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-nez v5, :cond_2"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1310
+     :try_start_3
+@@ -1870,8 +1900,16 @@
+     invoke-interface/range {v1 .. v6}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowJoiningPreviouslyStartedSensorPredicate;->shouldAllowJoiningSensor(Ljava/lang/String;JJ)Z
+ 
+     move-result v1
++    
++    const-string v39, "PatchedSASSAllJ"
++    move/from16 v40, v1
++    invoke-static/range {v39 .. v40}, Lcom/librelink/app/ThirdPartyIntegration;->LogBool(Ljava/lang/String;Z)V
+ 
+     if-nez v1, :cond_3
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-nez v1, :cond_3"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1314
+     new-instance v1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorAlreadyStartedException;
+@@ -1884,12 +1922,22 @@
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_3 .. :try_end_3} :catch_0
+ 
+     :cond_2
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_2"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     move-object/from16 v31, v9
+ 
+     move-object v9, v5
+ 
+     .line 1317
+     :cond_3
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_3"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     :try_start_4
+     invoke-virtual {v8}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessingScanOutputs;->getSensorHasBeenRemoved()Z
+ 
+@@ -1899,6 +1947,10 @@
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_4 .. :try_end_4} :catch_7
+ 
+     if-eqz v1, :cond_5
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v1, :cond_5"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1318
+     :try_start_5
+@@ -1911,6 +1963,10 @@
+     move-result v1
+ 
+     if-eqz v1, :cond_4
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v1, :cond_4"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1319
+     new-instance v1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorTerminatedException;
+@@ -1921,6 +1977,11 @@
+ 
+     .line 1321
+     :cond_4
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_4"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     new-instance v1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorRemovedException;
+ 
+     invoke-direct {v1}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorRemovedException;-><init>()V
+@@ -1932,6 +1993,11 @@
+ 
+     .line 1325
+     :cond_5
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_5"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     :try_start_6
+     invoke-virtual {v8}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessingScanOutputs;->getAlgorithmResults()Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/AlgorithmResults;
+ 
+@@ -1971,6 +2037,10 @@
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_6 .. :try_end_6} :catch_7
+ 
+     if-eqz v3, :cond_6
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v3, :cond_6"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     :try_start_7
+     invoke-interface {v2}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+@@ -1995,6 +2065,11 @@
+     goto :goto_0
+ 
+     :cond_6
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_6"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     sub-int/2addr v1, v13
+ 
+     .line 1338
+@@ -2039,12 +2114,21 @@
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_8 .. :try_end_8} :catch_7
+ 
+     if-eqz v9, :cond_7
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v9, :cond_7"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1348
+     :try_start_9
+     invoke-virtual {v9}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/SensorEntity;->getEnableStreamingTimestamp()I
+ 
+     move-result v1
++    
++    const-string v39, "PatchedSASESTimes"
++    move/from16 v40, v1
++    invoke-static/range {v39 .. v40}, Lcom/librelink/app/ThirdPartyIntegration;->LogInt(Ljava/lang/String;I)V
++    
+     :try_end_9
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessingException; {:try_start_9 .. :try_end_9} :catch_1
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_9 .. :try_end_9} :catch_0
+@@ -2060,6 +2144,11 @@
+ 
+     .line 1350
+     :cond_7
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_7"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     :try_start_a
+     iget-object v1, v15, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService;->timeOfDayAdapter:Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/TimeOfDayAdapter;
+ 
+@@ -2078,18 +2167,35 @@
+     invoke-interface {v1, v14}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowEnablingStreamingPreviouslyStartedSensorPredicate;->shouldAllowEnablingStreaming(Ljava/lang/String;)Z
+ 
+     move-result v1
++    
++    const-string v39, "PatchedSASSAEStre"
++    move/from16 v40, v1
++    invoke-static/range {v39 .. v40}, Lcom/librelink/app/ThirdPartyIntegration;->LogBool(Ljava/lang/String;Z)V
+ 
+     const/4 v3, 0x0
+ 
+     if-nez v9, :cond_8
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-nez v9, :cond_8"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     if-eqz v1, :cond_8
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v1, :cond_8"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     const/4 v1, 0x1
+ 
+     goto :goto_3
+ 
+     :cond_8
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_8"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     move v1, v3
+ 
+     .line 1361
+@@ -2100,6 +2206,10 @@
+     invoke-virtual {v8}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessingScanOutputs;->getPersonalizationIndex()B
+ 
+     move-result v5
++    
++    const-string v39, "PatchedSASPersID"
++    move/from16 v40, v5
++    invoke-static/range {v39 .. v40}, Lcom/librelink/app/ThirdPartyIntegration;->LogByte(Ljava/lang/String;B)V
+ 
+     move/from16 v32, v13
+ 
+@@ -2111,6 +2221,12 @@
+     invoke-interface {v4, v6, v13, v5, v2}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;->getEnableStreamingPayload([B[BBI)[B
+ 
+     move-result-object v4
++    
++    const-string v39, "PatchedSASStrePL"
++    move-object/from16 v40, v4
++    invoke-static/range {v39 .. v40}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
++
++    
+     :try_end_a
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessingException; {:try_start_a .. :try_end_a} :catch_8
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_a .. :try_end_a} :catch_7
+@@ -2118,11 +2234,24 @@
+     const/4 v5, 0x0
+ 
+     if-nez v1, :cond_9
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-nez v1, :cond_9"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     move-object v4, v5
+ 
+     :cond_9
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_9"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     if-nez v9, :cond_b
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-nez v9, :cond_b"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 1375
+     :try_start_b
+@@ -2131,12 +2260,21 @@
+     move-result v9
+ 
+     if-eqz v4, :cond_a
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: after if-eqz v4, :cond_a"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     move/from16 v18, v2
+ 
+     goto :goto_4
+ 
+     :cond_a
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_a"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     move/from16 v18, v3
+ 
+     .line 1387
+@@ -2232,6 +2370,11 @@
+     goto :goto_9
+ 
+     :cond_b
++    
++    const-string v37, "PatchedSAS"
++    const-string v38, "processActivation: at :cond_b"
++    invoke-static/range {v37 .. v38}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     move-object/from16 v34, v4
+ 
+     move-object/from16 v35, v10
+@@ -2528,7 +2671,7 @@
+ .end method
+ 
+ .method private processScan(Ljava/lang/String;II[B[B[B)Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;
+-    .locals 36
++    .locals 38
+     .annotation system Ldalvik/annotation/Signature;
+         value = {
+             "(",
+@@ -2555,6 +2698,10 @@
+         }
+     .end annotation
+ 
++    const-string v36, "PatchedSAS"
++    const-string v37, "entering processScan()"
++    invoke-static/range {v36 .. v37}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     move-object/from16 v1, p0
+ 
+     move-object/from16 v2, p1
+@@ -4523,7 +4670,7 @@
+ 
+ # virtual methods
+ .method public activateSensor(Landroid/nfc/Tag;Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/User;Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowJoiningPreviouslyStartedSensorPredicate;Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/AllowEnablingStreamingPreviouslyStartedSensorPredicate;)Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;
+-    .locals 29
++    .locals 31
+     .annotation system Ldalvik/annotation/Signature;
+         value = {
+             "(",
+@@ -4584,9 +4731,17 @@
+     invoke-interface {v1, v11}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/rf/NfcRfModule;->getPatchInfo(Landroid/nfc/Tag;)[B
+ 
+     move-result-object v14
++    
++    const-string v29, "PatchedSASPInfo"
++    move-object/from16 v30, v14
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     if-nez v14, :cond_1
+-
++    
++    const-string v29, "PatchedSAS"
++    const-string v30, "activateSensor: getPatchInfo() != 0"
++    invoke-static/range {v29 .. v30}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     .line 698
+     new-instance v1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorRfTransmissionErrorException;
+ 
+@@ -4603,8 +4758,16 @@
+     invoke-interface {v1, v14, v2}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;->isPatchSupported([BLcom/abbottdiabetescare/flashglucose/sensorabstractionservice/ApplicationRegion;)Z
+ 
+     move-result v1
++    
++    const-string v29, "PatchedSASPSupp"
++    move/from16 v30, v1
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogBool(Ljava/lang/String;Z)V
+ 
+     if-nez v1, :cond_2
++    
++    const-string v29, "PatchedSAS"
++    const-string v30, "activateSensor: isPatchSupported() == 0"
++    invoke-static/range {v29 .. v30}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 702
+     new-instance v1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorNotCompatibleException;
+@@ -4620,6 +4783,10 @@
+     invoke-interface {v1, v11}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/rf/NfcRfModule;->getPatchUid(Landroid/nfc/Tag;)[B
+ 
+     move-result-object v12
++    
++    const-string v29, "PatchedSASPUID"
++    move-object/from16 v30, v12
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     .line 707
+     iget-object v1, v15, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService;->dataProcessing:Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;
+@@ -4628,6 +4795,10 @@
+     invoke-interface {v1, v14}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;->getProductFamily([B)I
+ 
+     move-result v1
++    
++    const-string v29, "PatchedSASPFAM"
++    move/from16 v30, v1
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogInt(Ljava/lang/String;I)V
+ 
+     .line 707
+     invoke-static {v1, v12}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService;->getSensorSerialNumber(I[B)Ljava/lang/String;
+@@ -4645,9 +4816,17 @@
+ 
+     .line 713
+     :cond_3
++    const-string v29, "PatchedSASSer"
++    move-object/from16 v30, v13
++    invoke-static/range {v29 .. v30}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     invoke-direct {v15, v11, v12, v14}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService;->readFullPatchContents(Landroid/nfc/Tag;[B[B)[B
+ 
+     move-result-object v18
++    
++    const-string v29, "PatchedSASCont"
++    move-object/from16 v30, v18
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     if-nez v18, :cond_4
+ 
+@@ -4681,11 +4860,20 @@
+     invoke-virtual {v10}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/PatchTimeValues;->getWarmupPeriodInMinutes()I
+ 
+     move-result v4
++    
++    const-string v29, "PatchedSASWUT"
++    move/from16 v30, v4
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogInt(Ljava/lang/String;I)V
+ 
+     .line 729
+     invoke-virtual {v10}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/PatchTimeValues;->getWearDurationInMinutes()I
+-
++    
+     move-result v5
++    
++    const-string v29, "PatchedSASWDur"
++    move/from16 v30, v5
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogInt(Ljava/lang/String;I)V
++
+     :try_end_0
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ActivationException; {:try_start_0 .. :try_end_0} :catch_1
+ 
+@@ -4717,6 +4905,10 @@
+     invoke-static {v1}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ProcessActivationResults;->access$000(Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ProcessActivationResults;)[B
+ 
+     move-result-object v2
++    
++    const-string v29, "PatchedSASESP1"
++    move-object/from16 v30, v2
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     if-eqz v2, :cond_6
+ 
+@@ -4726,10 +4918,18 @@
+     invoke-static {v1}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ProcessActivationResults;->access$000(Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ProcessActivationResults;)[B
+ 
+     move-result-object v3
++    
++    const-string v29, "PatchedSASESP2"
++    move-object/from16 v30, v3
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     invoke-interface {v2, v11, v3}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/rf/NfcRfModule;->enableStreaming(Landroid/nfc/Tag;[B)Z
+ 
+     move-result v2
++    
++    const-string v29, "PatchedSASEStre1"
++    move/from16 v30, v2
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogBool(Ljava/lang/String;Z)V
+ 
+     if-nez v2, :cond_6
+ 
+@@ -4803,6 +5003,10 @@
+     invoke-interface {v4, v12, v14, v5}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;->getActivationPayload([B[BB)[B
+ 
+     move-result-object v4
++    
++    const-string v29, "PatchedSASActPL"
++    move-object/from16 v30, v4
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     .line 758
+     iget-object v5, v15, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService;->dataProcessing:Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;
+@@ -4965,6 +5169,10 @@
+     invoke-virtual {v1}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ActivationException;->getEnableStreamingPayload()[B
+ 
+     move-result-object v5
++    
++    const-string v29, "PatchedSASESP3"
++    move-object/from16 v30, v5
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     if-eqz v5, :cond_9
+ 
+@@ -4974,10 +5182,18 @@
+     invoke-virtual {v1}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/DefaultSensorAbstractionService$ActivationException;->getEnableStreamingPayload()[B
+ 
+     move-result-object v7
++    
++    const-string v29, "PatchedSASESP4"
++    move-object/from16 v30, v7
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     invoke-interface {v5, v11, v7}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/rf/NfcRfModule;->enableStreaming(Landroid/nfc/Tag;[B)Z
+ 
+     move-result v5
++    
++    const-string v29, "PatchedSASEStre2"
++    move/from16 v30, v5
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogBool(Ljava/lang/String;Z)V
+ 
+     if-nez v5, :cond_9
+ 
+@@ -4995,6 +5211,10 @@
+     invoke-interface {v5, v11, v3, v4, v10}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/rf/NfcRfModule;->activatePatch(Landroid/nfc/Tag;B[B[B)Z
+ 
+     move-result v3
++    
++    const-string v29, "PatchedSASActPat"
++    move/from16 v30, v3
++    invoke-static/range {v29 .. v30}, Lcom/librelink/app/ThirdPartyIntegration;->LogBool(Ljava/lang/String;Z)V
+ 
+     if-eqz v3, :cond_c
+ 
+@@ -6558,7 +6778,7 @@
+ .end method
+ 
+ .method public getStreamingUnlockPayload(Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;)[B
+-    .locals 6
++    .locals 8
+     .annotation system Ldalvik/annotation/Signature;
+         value = {
+             "(",
+@@ -6589,6 +6809,10 @@
+     move-result-object p1
+ 
+     if-nez p1, :cond_0
++    
++    const-string v6, "PatchedSAS"
++    const-string v7, "getStreamingUnlockPayload: sensor2 == null"
++    invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 847
+     new-instance p1, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/SensorNotActiveException;
+@@ -6604,6 +6828,10 @@
+     move-result v4
+ 
+     if-nez v4, :cond_1
++    
++    const-string v6, "PatchedSAS"
++    const-string v7, "getStreamingUnlockPayload: enableStreamingTimestamp == 0"
++    invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     const/4 p1, 0x0
+ 
+@@ -6639,11 +6867,20 @@
+     invoke-virtual {p1}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/SensorEntity;->getStreamingUnlockCount()I
+ 
+     move-result v5
++    
++    const-string v6, "PatchedSAS"
++    const-string v7, "getStreamingUnlockPayload: before getStreamingUnlockPayload..."
++    invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     .line 857
+     invoke-interface/range {v0 .. v5}, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/dataprocessing/DataProcessing;->getStreamingUnlockPayload([B[BBII)[B
+ 
+     move-result-object p1
++    
++    const-string v6, "PatchedSAS"
++    const-string v7, "getStreamingUnlockPayload: after getStreamingUnlockPayload."
++    invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++    
+     :try_end_0
+     .catch Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/database/RecordCorruptException; {:try_start_0 .. :try_end_0} :catch_0
+ 
+diff --git a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor.smali b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor.smali
+index e1f61ef..7dd5c77 100644
+--- a/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor.smali
++++ b/smali/com/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor.smali
+@@ -87,7 +87,7 @@
+ .end method
+ 
+ .method constructor <init>(IJLcom/abbottdiabetescare/flashglucose/sensorabstractionservice/User;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;Ljava/util/TimeZone;Ljava/util/Date;ZIIZ)V
+-    .locals 0
++    .locals 1
+     .annotation system Ldalvik/annotation/Signature;
+         value = {
+             "(IJ",
+@@ -127,8 +127,10 @@
+     .line 121
+     iput-object p9, p0, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;->activationTime:Ljava/util/Date;
+ 
++    const/4 v0, 0x1
++    
+     .line 122
+-    iput-boolean p10, p0, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;->streamingAvailable:Z
++    iput-boolean v0, p0, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;->streamingAvailable:Z
+ 
+     .line 123
+     iput p11, p0, Lcom/abbottdiabetescare/flashglucose/sensorabstractionservice/Sensor;->warmupPeriodInMinutes:I
+@@ -243,7 +245,7 @@
+ 
+     move-result v0
+ 
+-    const/4 v1, 0x0
++    const/4 v1, 0x1
+ 
+     const/4 v2, 0x1
+ 
+diff --git a/smali_classes2/com/librelink/app/ThirdPartyIntegration.smali b/smali_classes2/com/librelink/app/ThirdPartyIntegration.smali
+index fe54b60..39ec79c 100644
+--- a/smali_classes2/com/librelink/app/ThirdPartyIntegration.smali
++++ b/smali_classes2/com/librelink/app/ThirdPartyIntegration.smali
+@@ -1095,3 +1095,243 @@
+     .line 187
+     return-void
+ .end method
++
++.method public static LogBool(Ljava/lang/String;Z)V
++    .locals 2
++    .param p0, "Identifier"    # Ljava/lang/String;
++    .param p1, "b1"    # Z
++
++    .prologue
++    .line 248
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v1, "PL"
++
++    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {p1}, Ljava/lang/String;->valueOf(Z)Ljava/lang/String;
++
++    move-result-object v1
++
++    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    .line 249
++    return-void
++.end method
++
++.method public static LogByte(Ljava/lang/String;B)V
++    .locals 2
++    .param p0, "Identifier"    # Ljava/lang/String;
++    .param p1, "b1"    # B
++
++    .prologue
++    .line 248
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v1, "PL"
++
++    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {p1}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
++
++    move-result-object v1
++
++    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    .line 249
++    return-void
++.end method
++
++.method public static LogByteArray(Ljava/lang/String;[B)V
++    .locals 6
++    .param p0, "Identifier"    # Ljava/lang/String;
++    .param p1, "bytes"    # [B
++
++    .prologue
++    .line 232
++    if-nez p1, :cond_0
++
++    .line 241
++    :goto_0
++    return-void
++
++    .line 233
++    :cond_0
++    const-string v4, "0123456789ABCDEF"
++
++    invoke-virtual {v4}, Ljava/lang/String;->toCharArray()[C
++
++    move-result-object v0
++
++    .line 234
++    .local v0, "hexArray":[C
++    array-length v4, p1
++
++    mul-int/lit8 v4, v4, 0x2
++
++    new-array v1, v4, [C
++
++    .line 235
++    .local v1, "hexChars":[C
++    const/4 v2, 0x0
++
++    .local v2, "j":I
++    :goto_1
++    array-length v4, p1
++
++    if-ge v2, v4, :cond_1
++
++    .line 236
++    aget-byte v4, p1, v2
++
++    and-int/lit16 v3, v4, 0xff
++
++    .line 237
++    .local v3, "v":I
++    mul-int/lit8 v4, v2, 0x2
++
++    ushr-int/lit8 v5, v3, 0x4
++
++    aget-char v5, v0, v5
++
++    aput-char v5, v1, v4
++
++    .line 238
++    mul-int/lit8 v4, v2, 0x2
++
++    add-int/lit8 v4, v4, 0x1
++
++    and-int/lit8 v5, v3, 0xf
++
++    aget-char v5, v0, v5
++
++    aput-char v5, v1, v4
++
++    .line 235
++    add-int/lit8 v2, v2, 0x1
++
++    goto :goto_1
++
++    .line 240
++    .end local v3    # "v":I
++    :cond_1
++    new-instance v4, Ljava/lang/StringBuilder;
++
++    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v5, "PL"
++
++    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v4
++
++    invoke-virtual {v4, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v4
++
++    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v4
++
++    new-instance v5, Ljava/lang/String;
++
++    invoke-direct {v5, v1}, Ljava/lang/String;-><init>([C)V
++
++    invoke-static {v4, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    goto :goto_0
++.end method
++
++.method public static LogInt(Ljava/lang/String;I)V
++    .locals 2
++    .param p0, "Identifier"    # Ljava/lang/String;
++    .param p1, "i1"    # I
++
++    .prologue
++    .line 244
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v1, "PL"
++
++    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {p1}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
++
++    move-result-object v1
++
++    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    .line 245
++    return-void
++.end method
++
++.method public static LogLong(Ljava/lang/String;J)V
++    .locals 3
++    .param p0, "Identifier"    # Ljava/lang/String;
++    .param p1, "l1"    # J
++
++    .prologue
++    .line 252
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v1, "PL"
++
++    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {p1, p2}, Ljava/lang/String;->valueOf(J)Ljava/lang/String;
++
++    move-result-object v1
++
++    invoke-static {v0, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    .line 253
++    return-void
++.end method
+diff --git a/smali_classes2/com/librelink/app/core/BleManager$3.smali b/smali_classes2/com/librelink/app/core/BleManager$3.smali
+index 878334b..805484e 100644
+--- a/smali_classes2/com/librelink/app/core/BleManager$3.smali
++++ b/smali_classes2/com/librelink/app/core/BleManager$3.smali
+@@ -388,7 +388,7 @@
+ .end method
+ 
+ .method public onCharacteristicWrite(Landroid/bluetooth/BluetoothGatt;Landroid/bluetooth/BluetoothGattCharacteristic;I)V
+-    .locals 1
++    .locals 3
+ 
+     .line 258
+     iget-object p1, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+@@ -486,8 +486,12 @@
+     invoke-virtual {p3, p2}, Landroid/bluetooth/BluetoothGatt;->writeDescriptor(Landroid/bluetooth/BluetoothGattDescriptor;)Z
+ 
+     move-result p2
+-
++    
+     if-eqz p2, :cond_0
++    
++    const-string v1, "PatchedBleManager"
++    const-string v2, "onCharacteristicWrite: successfully set BLE passcode"
++    invoke-static/range {v1 .. v2}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+ 
+     goto :goto_0
+ 
+@@ -666,10 +670,11 @@
+ .end method
+ 
+ .method public onServicesDiscovered(Landroid/bluetooth/BluetoothGatt;I)V
+-    .locals 5
++    .locals 9
+ 
+     .line 214
+     iget-object p1, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
++    iget-object v6, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+ 
+     new-instance v0, Ljava/lang/StringBuilder;
+ 
+@@ -688,6 +693,9 @@
+     invoke-static {p1, v0}, Lcom/librelink/app/core/BleManager;->access$200(Lcom/librelink/app/core/BleManager;Ljava/lang/String;)V
+ 
+     if-nez p2, :cond_1
++    
++    const-string v5, "onServicesDiscovered: i == 0"    
++    invoke-static {v6, v5}, Lcom/librelink/app/core/BleManager;->access$200(Lcom/librelink/app/core/BleManager;Ljava/lang/String;)V
+ 
+     .line 217
+     iget-object p1, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+@@ -707,6 +715,9 @@
+     move-result-object p1
+ 
+     if-eqz p1, :cond_1
++    
++    const-string v5, "onServicesDiscovered: service != null"    
++    invoke-static {v6, v5}, Lcom/librelink/app/core/BleManager;->access$200(Lcom/librelink/app/core/BleManager;Ljava/lang/String;)V
+ 
+     .line 221
+     iget-object p2, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
+@@ -720,9 +731,12 @@
+     move-result-object p1
+ 
+     if-eqz p1, :cond_1
+-
++    
+     .line 224
+     iget-object p2, p0, Lcom/librelink/app/core/BleManager$3;->this$0:Lcom/librelink/app/core/BleManager;
++    
++    const-string v5, "onServicesDiscovered: characteristic != null"    
++    invoke-static {v6, v5}, Lcom/librelink/app/core/BleManager;->access$200(Lcom/librelink/app/core/BleManager;Ljava/lang/String;)V
+ 
+     invoke-static {p2}, Lcom/librelink/app/core/BleManager;->access$700(Lcom/librelink/app/core/BleManager;)Ljavax/inject/Provider;
+ 
+@@ -739,6 +753,9 @@
+     move-result-object p2
+ 
+     if-eqz p2, :cond_1
++    
++    const-string v5, "onServicesDiscovered: sensors != null"    
++    invoke-static {v6, v5}, Lcom/librelink/app/core/BleManager;->access$200(Lcom/librelink/app/core/BleManager;Ljava/lang/String;)V
+ 
+     const/4 v0, 0x0
+ 
+@@ -773,6 +790,9 @@
+     move-result v2
+ 
+     if-eqz v2, :cond_0
++    
++    const-string v5, "onServicesDiscovered: sensor.getSerialNumber().equals(BleManager.this.mActiveDeviceSerialNumber)"    
++    invoke-static {v6, v5}, Lcom/librelink/app/core/BleManager;->access$200(Lcom/librelink/app/core/BleManager;Ljava/lang/String;)V
+ 
+     const/4 v2, 0x0
+ 
+@@ -803,6 +823,13 @@
+ 
+     :goto_1
+     if-eqz v1, :cond_0
++    
++    const-string v5, "onServicesDiscovered: bArr != null)"    
++    invoke-static {v6, v5}, Lcom/librelink/app/core/BleManager;->access$200(Lcom/librelink/app/core/BleManager;Ljava/lang/String;)V
++    
++    const-string v7, "PatchedBleManager"
++    move-object/from16 v8, v1
++    invoke-static/range {v7 .. v8}, Lcom/librelink/app/ThirdPartyIntegration;->LogByteArray(Ljava/lang/String;[B)V
+ 
+     .line 243
+     invoke-virtual {p1, v1}, Landroid/bluetooth/BluetoothGattCharacteristic;->setValue([B)Z
+diff --git a/smali_classes2/com/librelink/app/core/modules/SensorModule.smali b/smali_classes2/com/librelink/app/core/modules/SensorModule.smali
+index 2d7b83f..91dc549 100644
+--- a/smali_classes2/com/librelink/app/core/modules/SensorModule.smali
++++ b/smali_classes2/com/librelink/app/core/modules/SensorModule.smali
+@@ -104,37 +104,41 @@
+ .end method
+ 
+ .method static final synthetic lambda$provideAllowEnablingStreamingPreviouslyStartedSensorPredicate$1$SensorModule(Lcom/librelink/app/prefs/SharedPreference;Ljava/lang/String;)Z
+-    .locals 1
++    .locals 2
+     .param p0    # Lcom/librelink/app/prefs/SharedPreference;
+         .annotation runtime Lcom/librelink/app/core/Qualifiers$PreviouslyStartedSensor;
+         .end annotation
+     .end param
+-
+-    .line 169
+-    invoke-interface {p0}, Lcom/librelink/app/prefs/SharedPreference;->isSet()Z
+-
+-    move-result v0
+-
+-    if-eqz v0, :cond_0
+-
+-    invoke-interface {p0}, Lcom/librelink/app/prefs/SharedPreference;->get()Ljava/lang/Object;
+-
+-    move-result-object p0
+-
+-    invoke-virtual {p1, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+-
+-    move-result p0
+-
+-    if-eqz p0, :cond_0
++    
++    const-string v0, "PatchedSAS"
++    const-string v1, "lambda$provideAllowEnablingStreamingPreviouslyStartedSensorPredicate$1$SensorModule: enable Streaming Workaround active -> enable streaming also if not allowed"
++    invoke-static/range {v0 .. v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
++
++    # .line 169
++    # invoke-interface {p0}, Lcom/librelink/app/prefs/SharedPreference;->isSet()Z
++    # 
++    # move-result v0
++    # 
++    # if-eqz v0, :cond_0
++    # 
++    # invoke-interface {p0}, Lcom/librelink/app/prefs/SharedPreference;->get()Ljava/lang/Object;
++    # 
++    # move-result-object p0
++    # 
++    # invoke-virtual {p1, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++    # 
++    # move-result p0
++    # 
++    # if-eqz p0, :cond_0
+ 
+     const/4 p0, 0x1
+ 
+     return p0
+ 
+-    :cond_0
+-    const/4 p0, 0x0
+-
+-    return p0
++    # :cond_0
++    # const/4 p0, 0x0
++    # 
++    # return p0
+ .end method
+ 
+ 

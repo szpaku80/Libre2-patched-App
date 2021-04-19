@@ -1,0 +1,205 @@
+<<< log_count = 68 >>>
+[06-06 00:38:55.710 17396:29265 D/PLPatchedSASPInfo]
+9D083001382B
+
+[06-06 00:38:55.717 17396:29265 D/PLPatchedSASPSupp]
+true
+
+[06-06 00:38:55.717 17396:29265 D/PLPatchedSASPUID]
+1204CE0000A407E0
+
+[06-06 00:38:55.719 17396:29265 D/PLPatchedSASPFAM]
+3
+
+[06-06 00:38:55.719 17396:29265 D/PatchedSASSer]
+3MH001LHXXX
+
+[06-06 00:38:56.042 17396:29265 D/PLPatchedSASCont]
+3476FFF867695A17CDFDF49797096F5D3C3A9C74EBFCA56284F85E0E25E5C1648DF8E4B787CB12CC5EA504F46F3EAC87E7977622ADCB366D234FC634FE202C7B5A3746C8603D22E494FA46C2245C6C77BEAD9C20345C7D905E3F335967B0979B800BAD1B99CB71321B57926C2FD2D8500491C2028F5FB46E362A1EE07D508A9DC6DB556D91ECF893AE8C4717BE88E0D3AB90F4F4A074DB8215D3999491A564EC1699F2C64FBEB66C7756F590B7DBBF0C1B0551761CA7E81F272A6DE75701F2D83016AEFEA3B11B23AA0A198C7CA4F30962CEC08BDC212934E3EEDA03593880D4B86B7B50E83BAFBCBA02D274E753AD788F5CFE0EDF31ABCCC3E172EA948AEBD72C22289C95B4B9C737F74F73BA4AC81602A7E31A8236CEA02B4D69CDC1D5EE1D3C19515198997379C7DAD6BC976F02BA72947A29AF21047AA10202B6D5FF830343A389C04F421ACC2FFCF4372D2BD471D85610540BB05A80
+
+[06-06 00:38:56.044 17396:29265 D/PLPatchedSASWUT]
+60
+
+[06-06 00:38:56.044 17396:29265 D/PLPatchedSASWDur]
+20160
+
+[06-06 00:38:56.044 17396:29265 D/PatchedSAS]
+entering processActivation()
+
+[06-06 00:38:56.046 17396:29265 D/PatchedSAS]
+processActivation: at :cond_0
+
+[06-06 00:38:56.051 17396:29265 D/PatchedSAS]
+processActivation: at :cond_1
+
+[06-06 00:38:56.095 17396:29265 D/PatchedSAS]
+processActivation: after if-nez v5, :cond_2
+
+[06-06 00:38:56.096 17396:29265 D/PLPatchedSASSAllJ]
+true
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: at :cond_3
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: at :cond_5
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: after if-eqz v3, :cond_6
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: after if-eqz v3, :cond_6
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: at :cond_6
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: at :cond_7
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+lambda$provideAllowEnablingStreamingPreviouslyStartedSensorPredicate$1$SensorModule: enable Streaming Workaround active -> enable streaming also if not allowed
+
+[06-06 00:38:56.096 17396:29265 D/PLPatchedSASSAEStre]
+true
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: after if-nez v9, :cond_8
+
+[06-06 00:38:56.096 17396:29265 D/PatchedSAS]
+processActivation: after if-eqz v1, :cond_8
+
+[06-06 00:38:56.097 17396:29265 D/PLPatchedSASPersID]
+0
+
+[06-06 00:38:56.098 17396:29265 D/PLPatchedSASStrePL]
+1E808E9D13663D93F5
+
+[06-06 00:38:56.099 17396:29265 D/PatchedSAS]
+processActivation: at :cond_9
+
+[06-06 00:38:56.099 17396:29265 D/PatchedSAS]
+processActivation: after if-nez v9, :cond_b
+
+[06-06 00:38:56.099 17396:29265 D/PatchedSAS]
+processActivation: after if-eqz v4, :cond_a
+
+[06-06 00:38:56.136 17396:29265 D/PLPatchedSASESP1]
+1E808E9D13663D93F5
+
+[06-06 00:38:56.136 17396:29265 D/PLPatchedSASESP2]
+1E808E9D13663D93F5
+
+[06-06 00:38:56.162 17396:29265 D/PLPatchedSASEStre1]
+true
+
+[06-06 00:38:56.286 17396:29265 D/PatchedBleManager]
+setActiveDevice invoked with "3MH001LHXXX"
+
+[06-06 00:38:56.301 17396:17396 D/PatchedBleManager]
+SCAN: starting scan.  looking for:
+
+[06-06 00:38:56.301 17396:17396 D/PatchedBleManager]
+SCAN:   serial number: 3MH001LHXXX
+
+[06-06 00:39:49.745 17396:17396 D/PatchedBleManager]
+onScanResult called
+
+[06-06 00:39:49.746 17396:17396 D/PatchedBleManager]
+SCAN: processScanResult device found
+
+[06-06 00:39:49.746 17396:17396 D/PatchedBleManager]
+SCAN:      address [90:1A:4F:XX:XX:XX]
+
+[06-06 00:39:49.747 17396:17396 D/PatchedBleManager]
+SCAN:         rssi [-56]
+
+[06-06 00:39:49.747 17396:17396 D/PatchedBleManager]
+SCAN:   local name [ABBOTT3MH001LHXXX]
+
+[06-06 00:39:49.751 17396:17396 D/PatchedBleManager]
+SCAN: stopping scan.
+
+[06-06 00:39:49.834 17396:17396 D/PatchedBleManager]
+initiating a connect attempt to 90:1A:4F:XX:XX:XX
+
+[06-06 00:39:50.232 17396:17439 D/PatchedBleManager]
+onConnectionStateChange called with status:0, state:CONNECTED
+
+[06-06 00:39:50.775 17396:17439 D/PatchedBleManager]
+onServicesDiscovered invoked, status: 0
+
+[06-06 00:39:50.775 17396:17439 D/PatchedBleManager]
+onServicesDiscovered: i == 0
+
+[06-06 00:39:50.775 17396:17439 D/PatchedBleManager]
+onServicesDiscovered: service != null
+
+[06-06 00:39:50.775 17396:17439 D/PatchedBleManager]
+onServicesDiscovered: characteristic != null
+
+[06-06 00:39:50.784 17396:17439 D/PatchedBleManager]
+onServicesDiscovered: sensors != null
+
+[06-06 00:39:50.785 17396:17439 D/PatchedBleManager]
+onServicesDiscovered: sensor.getSerialNumber().equals(BleManager.this.mActiveDeviceSerialNumber)
+
+[06-06 00:39:50.806 17396:17439 D/PatchedSAS]
+getStreamingUnlockPayload: before getStreamingUnlockPayload...
+
+[06-06 00:39:50.809 17396:17439 D/PatchedSAS]
+getStreamingUnlockPayload: after getStreamingUnlockPayload.
+
+[06-06 00:39:50.809 17396:17439 D/PatchedBleManager]
+onServicesDiscovered: bArr != null)
+
+[06-06 00:39:50.809 17396:17439 D/PLPatchedBleManager]
+818E9D1352BEE03F8465703C
+
+[06-06 00:39:50.809 17396:17439 D/PatchedBleManager]
+invoking writeCharacteristic with login passcode of 12 bytes
+
+[06-06 00:39:50.829 17396:17439 D/PatchedBleManager]
+onCharacteristicWrite invoked, status:0
+
+[06-06 00:39:50.834 17396:17439 D/PatchedBleManager]
+onCharacteristicWrite: successfully set BLE passcode
+
+[06-06 00:39:50.852 17396:17439 D/PatchedBleManager]
+onCharacteristicChanged invoked: 0000f002-0000-1000-8000-00805f9b34fb
+
+[06-06 00:39:50.854 17396:17439 D/PatchedBleManager]
+onCharacteristicChanged invoked: 0000f002-0000-1000-8000-00805f9b34fb
+
+[06-06 00:39:50.855 17396:17396 D/PatchedBleManager]
+BLE Streaming packet received containing:[69, 24, 74, 42, -2, 31, 102, 23, 99, -8, 10, 54, -26, 38, -31, -96, -114, -39, -30, -42, 105, -21, 36, -124, 97, 31, 31, -72, 57, 110, -117, -30, 89, -108, 97, -24, -60, 16, 62, -91, -34, -59, 108, -118, -104, 118]
+
+[06-06 00:39:50.973 17396:17396 D/PatchedBleManager]
+BLE Streaming Data Result: 60.0
+
+[06-06 00:40:51.381 17396:25826 D/PatchedBleManager]
+onCharacteristicChanged invoked: 0000f002-0000-1000-8000-00805f9b34fb
+
+[06-06 00:40:51.382 17396:25826 D/PatchedBleManager]
+onCharacteristicChanged invoked: 0000f002-0000-1000-8000-00805f9b34fb
+
+[06-06 00:40:51.384 17396:25826 D/PatchedBleManager]
+onCharacteristicChanged invoked: 0000f002-0000-1000-8000-00805f9b34fb
+
+[06-06 00:40:51.385 17396:17396 D/PatchedBleManager]
+BLE Streaming packet received containing:[67, -111, 77, 103, 12, 118, 23, -6, -53, -31, 42, -104, 123, -2, 79, 86, -89, 97, 52, -76, 21, 105, 65, -116, -128, 82, 9, -74, -97, -92, 95, -87, -53, 92, -7, -61, 25, -76, -86, 122, -70, -92, 47, 26, 2, -30]
+
+[06-06 00:40:51.485 17396:17396 D/PatchedBleManager]
+BLE Streaming Data Result: 60.0
+
+[06-06 00:41:50.069 17396:25826 D/PatchedBleManager]
+onCharacteristicChanged invoked: 0000f002-0000-1000-8000-00805f9b34fb
+
+[06-06 00:41:50.072 17396:25826 D/PatchedBleManager]
+onCharacteristicChanged invoked: 0000f002-0000-1000-8000-00805f9b34fb
+
+[06-06 00:41:50.074 17396:17396 D/PatchedBleManager]
+BLE Streaming packet received containing:[10, -109, 62, -123, 67, 28, -1, -45, -36, -93, -96, -18, 45, -104, -85, 113, -1, -91, -108, 12, -11, -1, 40, -90, 116, -48, 64, 42, -77, -108, 55, -28, -77, 124, -125, 44, -59, -114, 99, -21, 90, 11, -100, 77, 35, -99]
+
+[06-06 00:41:50.192 17396:17396 D/PatchedBleManager]
+BLE Streaming Data Result: 60.0
+
