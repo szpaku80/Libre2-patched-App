@@ -21,9 +21,9 @@ if [ ! -e ~/.wgetrc ] ; then
 fi
 
 echo -e "${WHITE}Lade original APK Version 2.3.0 herunter ...${NORMAL}"
-wget -O APK/apkpure.html --keep-session-cookies --save-cookies cookies.txt https://apkpure.com/de/freestyle-librelink-de/com.freestylelibre.app.de/download/4751-APK
+wget -O APK/apkpure.html --keep-session-cookies --save-cookies cookies.txt -U chrome https://apkpure.com/de/freestyle-librelink-de/com.freestylelibre.app.de/download/4751-APK
 URL=$(grep "hier klicken" APK/apkpure.html | sed 's#^.*https://##' | sed 's/">.*//')
-wget -O APK/${FILENAME_230}.apk --load-cookies cookies.txt https://${URL}
+wget -O APK/${FILENAME_230}.apk --load-cookies cookies.txt -U chrome https://${URL}
 if [ $? = 0 ]; then
   echo -e "${GREEN}  okay.${NORMAL}"
   echo
